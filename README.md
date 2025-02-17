@@ -7,6 +7,5 @@
 ## Setup
 
 - do `pnpm install`
-- do `./start-database.sh` in your terminal
 - do `pnpm db:studio` in your terminal
 - do `pnpm dev` in your terminal
