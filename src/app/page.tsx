@@ -1,69 +1,70 @@
-import Link from "next/link";
+'use client';
 
-import { LatestPost } from "@/app/_components/post";
-import { auth } from "@/server/auth";
-import { api, HydrateClient } from "@/trpc/server";
+declare global {
+  interface Window {
+    initMap: () => void;
+  }
+}
 
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
-  const session = await auth();
+import React, { useEffect, useState } from 'react';
+import { APIProvider, Map, MapCameraChangedEvent } from '@vis.gl/react-google-maps';
 
-  if (session?.user) {
-    void api.post.getLatest.prefetch();
+export default function Home() {
+  const apiKey = process.env.NEXT_PUBLIC_MAPS_KEY || "";
+
+  const [isClient, setIsClient] = useState(false);
+  const [isMapReady, setIsMapReady] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+
+    if (!apiKey) {
+      console.error('Google Maps API key is missing');
+      return;
+    }
+
+    const script = document.createElement('script');
+    script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+    script.async = true;
+    script.onload = () => {
+      console.log('Google Maps API has loaded.');
+      setIsMapReady(true);
+    };
+    script.onerror = () => {
+      console.error('Failed to load Google Maps API');
+    };
+    document.head.appendChild(script);
+
+    window.initMap = () => {
+      console.log('Maps API has initialized.');
+    };
+
+    return () => {
+      document.head.removeChild(script);
+    };
+  }, [apiKey]);
+
+  if (!isClient || !isMapReady) {
+    return <div>Loading Map...</div>;
   }
 
   return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
-            </p>
-
-            <div className="flex flex-col items-center justify-center gap-4">
-              <p className="text-center text-2xl text-white">
-                {session && <span>Logged in as {session.user?.name}</span>}
-              </p>
-              <Link
-                href={session ? "/api/auth/signout" : "/api/auth/signin"}
-                className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-              >
-                {session ? "Sign out" : "Sign in"}
-              </Link>
-            </div>
-          </div>
-
-          {session?.user && <LatestPost />}
+    <main className="flex min-h-screen items-center justify-center bg-gray-900">
+      <APIProvider apiKey={apiKey} onLoad={() => console.log('Maps API has loaded.')}>
+        <div className="w-[800px] h-[600px] rounded-xl shadow-lg overflow-hidden">
+          <Map
+            defaultZoom={13}
+            defaultCenter={{ lat: -33.860664, lng: 151.208138 }}
+            streetViewControl={true}
+            streetViewControlOptions={{
+              position: window.google.maps.ControlPosition.TOP_LEFT,
+            }}
+            onCameraChanged={(ev: MapCameraChangedEvent) =>
+              console.log('camera changed:', ev.detail.center, 'zoom:', ev.detail.zoom)
+            }
+          />
         </div>
-      </main>
-    </HydrateClient>
+      </APIProvider>
+    </main>
   );
 }
