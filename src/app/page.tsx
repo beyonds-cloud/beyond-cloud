@@ -59,65 +59,62 @@ export default function Home() {
           zoom: 13,
           streetViewControl: true,
           styles: [
-            {
-              featureType: "all",
-              elementType: "labels.text.fill",
-              stylers: [{ color: "#ffffff" }],
-            },
-            {
-              featureType: "all",
-              elementType: "labels.text.stroke",
-              stylers: [{ color: "#000000" }, { lightness: 13 }],
-            },
-            {
-              featureType: "water",
-              elementType: "geometry",
-              stylers: [{ color: "#0e1626" }],
-            },
-            {
-              featureType: "landscape",
-              elementType: "geometry",
-              stylers: [{ color: "#1e303d" }],
-            },
+            { featureType: "all", elementType: "labels.text.fill", stylers: [{ color: "#ffffff" }] },
+            { featureType: "all", elementType: "labels.text.stroke", stylers: [{ color: "#000000" }, { lightness: 13 }] },
+            { featureType: "water", elementType: "geometry", stylers: [{ color: "#0e1626" }] },
+            { featureType: "landscape", elementType: "geometry", stylers: [{ color: "#1e303d" }] },
           ],
         };
-
+  
         const mapElement = document.getElementById("map");
         const streetViewElement = document.getElementById("street-view");
-
         if (!mapElement || !streetViewElement) {
           throw new Error("Map or Street View container elements not found");
         }
-
+  
         mapRef.current = new window.google.maps.Map(mapElement, mapOptions);
-
+  
         panoramaRef.current = new window.google.maps.StreetViewPanorama(
           streetViewElement,
           {
-            position: mapOptions.center,
             pov: { heading: 0, pitch: 0 },
             zoom: 1,
             visible: false,
-          },
+          }
         );
-
+  
         mapRef.current.setStreetView(panoramaRef.current);
-
-        let timeoutId: NodeJS.Timeout | null = null;
+  
         panoramaRef.current.addListener("visible_changed", () => {
-          if (timeoutId) clearTimeout(timeoutId);
-          timeoutId = setTimeout(() => {
-            const isVisible = panoramaRef.current?.getVisible();
-            setStreetViewActive(!!isVisible);
-          }, 500);
+          const isVisible = panoramaRef.current?.getVisible();
+          setStreetViewActive(!!isVisible);
+          if (isVisible) {
+            const newPosition = mapRef.current?.getStreetView().getLocation()?.latLng;
+            if (newPosition) {
+              panoramaRef.current?.setPosition(newPosition);
+              mapRef.current?.setCenter(newPosition);
+              setTimeout(() => {
+                if (panoramaRef.current) {
+                  window.google.maps.event.trigger(panoramaRef.current, "resize");
+                }
+                // explicitly force visibility
+                panoramaRef.current?.setVisible(true);
+              }, 1000); // debounce delay, we need this to make sure it loads properly
+            }
+          }
         });
-
+  
+        panoramaRef.current.addListener("position_changed", () => {
+          const newPosition = panoramaRef.current?.getPosition();
+          if (newPosition) {
+            mapRef.current?.setCenter(newPosition);
+          }
+        });
+  
         panoramaRef.current.addListener("status_changed", () => {
           const status = panoramaRef.current?.getStatus();
           if (status !== window.google.maps.StreetViewStatus.OK) {
-            console.error(
-              "Street View failed to load. Location might not have coverage.",
-            );
+            console.error("Street View failed to load. Location might not have coverage.");
             setError("Street View is not available at this location.");
           } else {
             setError(null);
@@ -125,12 +122,10 @@ export default function Home() {
         });
       } catch (err) {
         console.error("Error initializing map:", err);
-        setError(
-          "Failed to initialize Google Maps. Please refresh the page or try again later.",
-        );
+        setError("Failed to initialize Google Maps. Please refresh the page or try again later.");
       }
     }
-  }, [isMapReady]);
+  }, [isMapReady]);  
 
   const captureStreetView = () => {
     if (panoramaRef.current && panoramaRef.current.getVisible()) {
