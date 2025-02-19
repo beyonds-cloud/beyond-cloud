@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1739935292667,
+      "tag": "0000_left_proteus",
+      "breakpoints": true
+    }
+  ]
+}

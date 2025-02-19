@@ -11,7 +11,7 @@ declare global {
 }
 
 export default function Home() {
-  const apiKey = process.env.NEXT_PUBLIC_MAPS_KEY || "";
+  const apiKey = process.env.NEXT_PUBLIC_MAPS_KEY ?? "";
   const [isMapReady, setIsMapReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [streetViewActive, setStreetViewActive] = useState(false);
@@ -128,10 +128,10 @@ export default function Home() {
   }, [isMapReady]);  
 
   const captureStreetView = () => {
-    if (panoramaRef.current && panoramaRef.current.getVisible()) {
-      const position = panoramaRef.current.getPosition();
-      const pov = panoramaRef.current.getPov();
-      const zoom = panoramaRef.current.getZoom();
+    if (panoramaRef.current?.getVisible()) {
+      const position = panoramaRef.current?.getPosition();
+      const pov = panoramaRef.current?.getPov();
+      const zoom = panoramaRef.current?.getZoom();
       const fov = 180 / Math.pow(2, zoom ?? 1);
 
       console.log("Street View Data:", {

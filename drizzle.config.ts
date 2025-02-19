@@ -8,5 +8,5 @@ export default {
   dbCredentials: {
     url: env.DATABASE_URL,
   },
-  tablesFilter: ["alterearth_*"],
+  tablesFilter: ["beyond-cloud_*"],
 } satisfies Config;
