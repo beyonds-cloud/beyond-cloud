@@ -1,0 +1,14 @@
+import { auth } from "@/server/auth";
+import { redirect } from "next/navigation";
+import Main from "./Main";
+
+export default async function MainPage() {
+  const session = await auth();
+
+  // Redirect to home if user is not logged in
+  if (!session?.user) {
+    redirect("/");
+  }
+
+  return <Main />;
+} 
