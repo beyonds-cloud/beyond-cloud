@@ -118,7 +118,7 @@ export default function Main() {
             try {
               streetViewService.getPanorama({ location: center }, (data, status) => {
                 if (status === google.maps.StreetViewStatus.OK && data && data.location) {
-                  panorama.setPosition(data.location.latLng);
+                  panorama.setPosition(data.location.latLng ?? { lat: 0, lng: 0 }); 
                   // Don't update map center here since position_changed will handle it
                 } else if (status === google.maps.StreetViewStatus.ZERO_RESULTS) {
                   setError("No Street View available at this location.");
