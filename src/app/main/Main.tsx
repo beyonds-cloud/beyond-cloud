@@ -13,7 +13,7 @@ declare global {
 
 function Toast({ message, onClose }: { message: string; onClose: () => void }) {
   useEffect(() => {
-    const timer = setTimeout(onClose, 5000); // Auto-dismiss after 5 seconds
+    const timer = setTimeout(onClose, 5000);
     return () => clearTimeout(timer);
   }, [onClose]);
 
@@ -46,25 +46,21 @@ export default function Main() {
 
   const exitStreetView = useCallback(() => {
     if (!panoramaRef.current || !mapRef.current) return;
-    mapRef.current.setOptions({ streetViewControl: false });
+    const currentPosition = panoramaRef.current.getPosition();
     panoramaRef.current.setVisible(false);
-    mapRef.current.setStreetView(null);
     setStreetViewActive(false);
-    setTimeout(() => {
-      if (mapRef.current) {
-        mapRef.current.setOptions({ streetViewControl: true });
-        mapRef.current.setStreetView(panoramaRef.current);
-      }
-    }, 100);
+    if (currentPosition) {
+      mapRef.current.setCenter(currentPosition);
+    }
   }, []);
 
+  // Log the current Street View parameters.
   const captureStreetView = () => {
     if (panoramaRef.current?.getVisible()) {
-      const position = panoramaRef.current?.getPosition();
-      const pov = panoramaRef.current?.getPov();
-      const zoom = panoramaRef.current?.getZoom();
+      const position = panoramaRef.current.getPosition();
+      const pov = panoramaRef.current.getPov();
+      const zoom = panoramaRef.current.getZoom();
       const fov = 180 / Math.pow(2, zoom ?? 1);
-
       console.log("Street View Data:", {
         latitude: position?.lat(),
         longitude: position?.lng(),
@@ -76,16 +72,24 @@ export default function Main() {
   };
 
   useEffect(() => {
-    if (!isMapReady || !window.google || !mapElementRef.current || !streetViewElementRef.current) {
+    if (
+      !isMapReady ||
+      !window.google ||
+      !mapElementRef.current ||
+      !streetViewElementRef.current
+    ) {
       return;
     }
 
     try {
-      // Initialize map
+      // Set your default center.
+      const defaultCenter = { lat: 48.85790621222511, lng: 2.2949450397944915 };
+
+      // Disable the default Street View control (pegman) so it won’t auto-trigger.
       const mapOptions: google.maps.MapOptions = {
-        center: { lat: 48.85790621222511, lng: 2.2949450397944915 },
+        center: defaultCenter,
         zoom: 13,
-        streetViewControl: true,
+        streetViewControl: false,
         styles: [
           { featureType: "all", elementType: "labels.text.fill", stylers: [{ color: "#ffffff" }] },
           { featureType: "all", elementType: "labels.text.stroke", stylers: [{ color: "#000000" }, { lightness: 13 }] },
@@ -98,7 +102,7 @@ export default function Main() {
       mapRef.current = map;
 
       const panorama = new window.google.maps.StreetViewPanorama(streetViewElementRef.current, {
-        position: mapOptions.center,
+        position: defaultCenter,
         pov: { heading: 0, pitch: 0 },
         zoom: 1,
         visible: false,
@@ -108,89 +112,60 @@ export default function Main() {
         addressControl: false,
         fullscreenControl: false,
         linksControl: true,
-        clickToGo: true,
+        clickToGo: false,
         panControl: true,
         zoomControl: true,
         showRoadLabels: false,
         disableDefaultUI: false,
       });
-      
       panoramaRef.current = panorama;
-
-      // Initialize street view service
-      const streetViewService = new google.maps.StreetViewService();
-      
-      // Set up the map
-      map.setOptions({ streetViewControl: true });
       map.setStreetView(panorama);
 
-      // Set up event listeners
-      const visibilityListener = panorama.addListener("visible_changed", () => {
-        const isVisible = panorama.getVisible();
-        setStreetViewActive(isVisible);
-        
-        if (isVisible) {
-          const center = map.getCenter();
-          if (center) {
-            try {
-              const currentZoom = map.getZoom();
-              if (currentZoom && currentZoom < 14) {
-                setError("Please zoom in closer to view Street View");
-                setShowToast(true);
-                panorama.setVisible(false);
-                return;
-              }
+      // Initialize the Street View service.
+      const streetViewService = new google.maps.StreetViewService();
 
-              streetViewService.getPanorama(
-                {
-                  location: center,
-                  radius: 50, // Add a smaller radius to ensure closer panoramas
-                  preference: google.maps.StreetViewPreference.NEAREST // Prefer nearest panorama
-                }, 
-                (data, status) => {
-                  if (status === google.maps.StreetViewStatus.OK && data && data.location) {
-                    setError(null);
-                    panorama.setPosition(data.location.latLng ?? { lat: 0, lng: 0 });
-                  } else {
-                    setError("No Street View available at this location.");
-                    panorama.setVisible(false);
-                  }
-                }
-              );
-            } catch (err) {
-              console.error("Error in Street View:", err);
-              setError("An error occurred while loading Street View.");
-              setShowToast(true);
-              panorama.setVisible(false);
-            }
+      // When the user clicks on the map, attempt to load Street View at that location.
+      map.addListener("click", (e: google.maps.MapMouseEvent) => {
+        if (e.latLng) {
+          if (map.getZoom() ?? 0 < 10) {
+            setError("Please zoom in closer to view Street View");
+            setShowToast(true);
+            return;
           }
-          map.setOptions({ streetViewControl: false });
-        } else {
-          map.setOptions({ streetViewControl: true });
+          streetViewService.getPanorama(
+            {
+              location: e.latLng,
+              radius: 50,
+              preference: google.maps.StreetViewPreference.NEAREST,
+            },
+            (data, status) => {
+              if (
+                status === google.maps.StreetViewStatus.OK &&
+                data &&
+                data.location &&
+                data.location.latLng
+              ) {
+                panorama.setPosition(data.location.latLng);
+                panorama.setVisible(true);
+                setStreetViewActive(true);
+              } else {
+                setError("No Street View available at this location.");
+                setShowToast(true);
+              }
+            }
+          );
         }
       });
 
       const positionListener = panorama.addListener("position_changed", () => {
-        // Clear any pending timeout
         if (positionUpdateTimeoutRef.current) {
           clearTimeout(positionUpdateTimeoutRef.current);
         }
-        
-        // Get position immediately for smoother updates
         const position = panorama.getPosition();
-        if (position) {
-          // Update map center with a small delay to prevent too frequent updates
+        if (position && map) {
           positionUpdateTimeoutRef.current = setTimeout(() => {
             map.setCenter(position);
-          }, 50); // Reduced from 100ms to 50ms for better responsiveness
-        }
-      });
-
-      const statusListener = panorama.addListener("status_changed", () => {
-        if (panorama.getStatus() !== google.maps.StreetViewStatus.OK) {
-          setError("Street View is not available at this location.");
-        } else {
-          setError(null);
+          }, 50);
         }
       });
 
@@ -198,12 +173,8 @@ export default function Main() {
         if (positionUpdateTimeoutRef.current) {
           clearTimeout(positionUpdateTimeoutRef.current);
         }
-        google.maps.event.removeListener(visibilityListener);
+        google.maps.event.clearListeners(map, "click");
         google.maps.event.removeListener(positionListener);
-        google.maps.event.removeListener(statusListener);
-        if (mapRef.current) {
-          mapRef.current.setStreetView(null);
-        }
       };
     } catch (err) {
       console.error("Error initializing map:", err);
@@ -218,10 +189,10 @@ export default function Main() {
           <div className="mb-4 text-red-500">
             <X className="mx-auto h-12 w-12" />
           </div>
-          <h2 className="mb-2 text-xl font-semibold text-white">
-            Error Loading Map
-          </h2>
-          <p className="text-gray-300">Google Maps API key is missing. Please set NEXT_PUBLIC_MAPS_KEY environment variable.</p>
+          <h2 className="mb-2 text-xl font-semibold text-white">Error Loading Map</h2>
+          <p className="text-gray-300">
+            Google Maps API key is missing. Please set NEXT_PUBLIC_MAPS_KEY environment variable.
+          </p>
         </div>
       </div>
     );
@@ -245,9 +216,7 @@ export default function Main() {
         ) : (
           <div className="w-full max-w-4xl p-4">
             <div className="mb-4 flex items-center justify-between">
-              <h1 className="text-3xl font-bold text-white">
-                Street View Explorer
-              </h1>
+              <h1 className="text-3xl font-bold text-white">Street View Explorer</h1>
               <Link
                 href="/api/auth/signout"
                 className="flex items-center rounded-lg bg-red-500 px-4 py-2 text-white transition-colors duration-200 hover:bg-red-600"
@@ -256,7 +225,7 @@ export default function Main() {
                 Sign Out
               </Link>
             </div>
-            
+
             <div className="relative h-[70vh] w-full overflow-hidden rounded-xl border-4 border-blue-500 shadow-lg">
               <div
                 ref={mapElementRef}
