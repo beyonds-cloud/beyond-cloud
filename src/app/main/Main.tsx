@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { MapPin, Loader2, X, LogOut } from "lucide-react";
+import { MapPin, Loader2, X, LogOut, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import Script from "next/script";
 
@@ -9,6 +9,23 @@ declare global {
   interface Window {
     google: typeof google;
   }
+}
+
+function Toast({ message, onClose }: { message: string; onClose: () => void }) {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 5000); // Auto-dismiss after 5 seconds
+    return () => clearTimeout(timer);
+  }, [onClose]);
+
+  return (
+    <div className="fixed top-4 right-4 z-50 flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-white shadow-lg">
+      <AlertCircle className="h-5 w-5" />
+      <span>{message}</span>
+      <button onClick={onClose} className="ml-2 rounded-full hover:bg-red-600 p-1">
+        <X className="h-4 w-4" />
+      </button>
+    </div>
+  );
 }
 
 export default function Main() {
@@ -21,6 +38,7 @@ export default function Main() {
   const mapElementRef = useRef<HTMLDivElement>(null);
   const streetViewElementRef = useRef<HTMLDivElement>(null);
   const positionUpdateTimeoutRef = useRef<NodeJS.Timeout>();
+  const [showToast, setShowToast] = useState(false);
 
   const handleGoogleMapsLoad = () => {
     setIsMapReady(true);
@@ -94,7 +112,7 @@ export default function Main() {
         panControl: true,
         zoomControl: true,
         showRoadLabels: false,
-        disableDefaultUI: false
+        disableDefaultUI: false,
       });
       
       panoramaRef.current = panorama;
@@ -112,22 +130,37 @@ export default function Main() {
         setStreetViewActive(isVisible);
         
         if (isVisible) {
-          // Get the current center immediately
           const center = map.getCenter();
           if (center) {
             try {
-              streetViewService.getPanorama({ location: center }, (data, status) => {
-                if (status === google.maps.StreetViewStatus.OK && data && data.location) {
-                  panorama.setPosition(data.location.latLng ?? { lat: 0, lng: 0 }); 
-                  // Don't update map center here since position_changed will handle it
-                } else if (status === google.maps.StreetViewStatus.ZERO_RESULTS) {
-                  setError("No Street View available at this location.");
-                  panorama.setVisible(false);
+              const currentZoom = map.getZoom();
+              if (currentZoom && currentZoom < 14) {
+                setError("Please zoom in closer to view Street View");
+                setShowToast(true);
+                panorama.setVisible(false);
+                return;
+              }
+
+              streetViewService.getPanorama(
+                {
+                  location: center,
+                  radius: 50, // Add a smaller radius to ensure closer panoramas
+                  preference: google.maps.StreetViewPreference.NEAREST // Prefer nearest panorama
+                }, 
+                (data, status) => {
+                  if (status === google.maps.StreetViewStatus.OK && data && data.location) {
+                    setError(null);
+                    panorama.setPosition(data.location.latLng ?? { lat: 0, lng: 0 });
+                  } else {
+                    setError("No Street View available at this location.");
+                    panorama.setVisible(false);
+                  }
                 }
-              });
+              );
             } catch (err) {
               console.error("Error in Street View:", err);
               setError("An error occurred while loading Street View.");
+              setShowToast(true);
               panorama.setVisible(false);
             }
           }
@@ -200,6 +233,9 @@ export default function Main() {
         src={`https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`}
         onLoad={handleGoogleMapsLoad}
       />
+      {showToast && error && (
+        <Toast message={error} onClose={() => setShowToast(false)} />
+      )}
       <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 to-blue-900">
         {!isMapReady ? (
           <div className="flex items-center justify-center">

@@ -64,3 +64,18 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Toast styles */
+.toaster-container {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+}
+
+/* Toast notification custom styles */
+:root {
+  --toaster-background: #ef4444;
+  --toaster-text: #ffffff;
+}
