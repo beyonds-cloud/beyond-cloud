@@ -44,6 +44,7 @@ export default function Main() {
     setIsMapReady(true);
   };
 
+
   const exitStreetView = useCallback(() => {
     if (!panoramaRef.current || !mapRef.current) return;
     const currentPosition = panoramaRef.current.getPosition();
@@ -127,7 +128,8 @@ export default function Main() {
       // When the user clicks on the map, attempt to load Street View at that location.
       map.addListener("click", (e: google.maps.MapMouseEvent) => {
         if (e.latLng) {
-          if (map.getZoom() ?? 0 < 10) {
+          const zoom = map.getZoom() ?? 0;
+          if (zoom < 10) {
             setError("Please zoom in closer to view Street View");
             setShowToast(true);
             return;
