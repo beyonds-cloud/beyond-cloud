@@ -1,4 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+import { auth } from "@/server/auth";
+import { db } from "@/server/db";
+import { users } from "@/server/db/schema";
+import { eq, sql } from "drizzle-orm";
 
 const PROJECT_ID = "onyx-robot-451205-n3";
 const LOCATION_ID = "us-central1";
@@ -27,6 +31,35 @@ interface ImageGenResponse {
 
 export async function POST(request: NextRequest) {
   try {
+    // Get the current user's session
+    const session = await auth();
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    // Check if user has made a request in the last 10 minutes
+    const user = await db.query.users.findFirst({
+      where: eq(users.id, session.user.id),
+    });
+
+    if (user?.lastImageRequest) {
+      const lastRequest = new Date(user.lastImageRequest);
+      const now = new Date();
+      const timeDiff = now.getTime() - lastRequest.getTime();
+      const minutesDiff = Math.floor(timeDiff / 1000 / 60);
+      const timeout = 10;
+
+      if (minutesDiff < timeout) {
+        return NextResponse.json(
+          { error: `Please wait ${timeout- minutesDiff} minutes before making another request` },
+          { status: 429 }
+        );
+      }
+    }
+
     const { description } = await request.json() as RequestParams;
 
     if (!description) {
@@ -35,6 +68,11 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Update the user's last image request time
+    await db.update(users)
+      .set({ lastImageRequest: sql`CURRENT_TIMESTAMP` })
+      .where(eq(users.id, session.user.id));
 
     // 1. Get Google Cloud access token
     const accessToken = await getAccessToken();

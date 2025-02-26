@@ -1,0 +1,1 @@
+ALTER TABLE "beyond-cloud_user" ALTER COLUMN "last_image_request" SET DEFAULT NULL;
