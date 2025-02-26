@@ -5,6 +5,7 @@ import { MapPin, Loader2, X, LogOut, AlertCircle } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 import Script from "next/script";
+import Image from "next/image";
 import StreetViewDescriber from "./StreetViewDescriber";
 
 declare global {
@@ -12,6 +13,13 @@ declare global {
     google: typeof google;
   }
 }
+
+// Define the User type
+type User = {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+};
 
 function Toast({ message, onClose }: { message: string; onClose: () => void }) {
   useEffect(() => {
@@ -30,7 +38,7 @@ function Toast({ message, onClose }: { message: string; onClose: () => void }) {
   );
 }
 
-export default function Main() {
+export default function Main({ user }: { user?: User }) {
   const apiKey = process.env.NEXT_PUBLIC_MAPS_KEY ?? "";
   const [isMapReady, setIsMapReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -162,7 +170,7 @@ export default function Main() {
             void setShowToast(true);
             return;
           }
-          streetViewService.getPanorama(
+          void streetViewService.getPanorama(
             {
               location: e.latLng,
               radius: 50,
@@ -171,8 +179,7 @@ export default function Main() {
             (data, status) => {
               if (
                 status === google.maps.StreetViewStatus.OK &&
-                data &&
-                data.location?.latLng
+                data?.location?.latLng
               ) {
                 panorama.setPosition(data.location.latLng);
                 panorama.setVisible(true);
@@ -261,7 +268,17 @@ export default function Main() {
                 href="/api/auth/signout"
                 className="flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-white transition-colors duration-200 hover:bg-white/20"
               >
-                <FcGoogle className="h-5 w-5" />
+                {user?.image ? (
+                  <Image 
+                    src={user.image} 
+                    alt={user.name ?? "User"} 
+                    width={20} 
+                    height={20} 
+                    className="h-5 w-5 rounded-full"
+                  />
+                ) : (
+                  <FcGoogle className="h-5 w-5" />
+                )}
                 <LogOut className="h-5 w-5" />
                 Sign Out
               </Link>
