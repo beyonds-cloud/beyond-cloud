@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { MapPin, Loader2, X, LogOut, AlertCircle } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 import Script from "next/script";
 import StreetViewDescriber from "./StreetViewDescriber";
@@ -79,14 +80,14 @@ export default function Main() {
       // Update the current position state
       if (position) {
         setCurrentPosition({
-          latitude: position?.lat(),
-          longitude: position?.lng(),
+          latitude: position.lat(),
+          longitude: position.lng(),
           heading: pov?.heading ?? 0,
           pitch: pov?.pitch ?? 0,
         });
         
         // Show the describer component
-        void setShowDescriber(true);
+        setShowDescriber(true);
       }
       
       console.log("Street View Data:", {
@@ -171,8 +172,7 @@ export default function Main() {
               if (
                 status === google.maps.StreetViewStatus.OK &&
                 data &&
-                data.location &&
-                data.location.latLng
+                data.location?.latLng
               ) {
                 panorama.setPosition(data.location.latLng);
                 panorama.setVisible(true);
@@ -259,9 +259,10 @@ export default function Main() {
               <h1 className="text-3xl font-bold text-white">Street View Explorer</h1>
               <Link
                 href="/api/auth/signout"
-                className="flex items-center rounded-lg bg-red-500 px-4 py-2 text-white transition-colors duration-200 hover:bg-red-600"
+                className="flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-white transition-colors duration-200 hover:bg-white/20"
               >
-                <LogOut className="mr-2 h-5 w-5" />
+                <FcGoogle className="h-5 w-5" />
+                <LogOut className="h-5 w-5" />
                 Sign Out
               </Link>
             </div>
