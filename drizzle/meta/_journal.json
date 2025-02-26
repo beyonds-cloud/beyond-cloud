@@ -15,6 +15,13 @@
       "when": 1740585462217,
       "tag": "0001_round_rick_jones",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1740588975860,
+      "tag": "0002_woozy_mephisto",
+      "breakpoints": true
     }
   ]
 }
