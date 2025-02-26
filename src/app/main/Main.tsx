@@ -2,14 +2,24 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 import { MapPin, Loader2, X, LogOut, AlertCircle } from "lucide-react";
+import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 import Script from "next/script";
+import Image from "next/image";
+import StreetViewDescriber from "./StreetViewDescriber";
 
 declare global {
   interface Window {
     google: typeof google;
   }
 }
+
+// Define the User type
+type User = {
+  name?: string | null;
+  email?: string | null;
+  image?: string | null;
+};
 
 function Toast({ message, onClose }: { message: string; onClose: () => void }) {
   useEffect(() => {
@@ -28,7 +38,7 @@ function Toast({ message, onClose }: { message: string; onClose: () => void }) {
   );
 }
 
-export default function Main() {
+export default function Main({ user }: { user?: User }) {
   const apiKey = process.env.NEXT_PUBLIC_MAPS_KEY ?? "";
   const [isMapReady, setIsMapReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,6 +49,18 @@ export default function Main() {
   const streetViewElementRef = useRef<HTMLDivElement>(null);
   const positionUpdateTimeoutRef = useRef<NodeJS.Timeout>();
   const [showToast, setShowToast] = useState(false);
+  const [showDescriber, setShowDescriber] = useState(false);
+  const [currentPosition, setCurrentPosition] = useState<{
+    latitude: number | null;
+    longitude: number | null;
+    heading: number;
+    pitch: number;
+  }>({
+    latitude: null,
+    longitude: null,
+    heading: 0,
+    pitch: 0,
+  });
 
   const handleGoogleMapsLoad = () => {
     setIsMapReady(true);
@@ -62,11 +84,25 @@ export default function Main() {
       const pov = panoramaRef.current.getPov();
       const zoom = panoramaRef.current.getZoom();
       const fov = 180 / Math.pow(2, zoom ?? 1);
+      
+      // Update the current position state
+      if (position) {
+        setCurrentPosition({
+          latitude: position.lat(),
+          longitude: position.lng(),
+          heading: pov?.heading ?? 0,
+          pitch: pov?.pitch ?? 0,
+        });
+        
+        // Show the describer component
+        setShowDescriber(true);
+      }
+      
       console.log("Street View Data:", {
         latitude: position?.lat(),
         longitude: position?.lng(),
-        heading: pov.heading,
-        pitch: pov.pitch,
+        heading: pov?.heading,
+        pitch: pov?.pitch,
         fov,
       });
     }
@@ -86,7 +122,7 @@ export default function Main() {
       // Set your default center.
       const defaultCenter = { lat: 48.85790621222511, lng: 2.2949450397944915 };
 
-      // Disable the default Street View control (pegman) so it won’t auto-trigger.
+      // Disable the default Street View control (pegman) so it won't auto-trigger.
       const mapOptions: google.maps.MapOptions = {
         center: defaultCenter,
         zoom: 13,
@@ -131,10 +167,10 @@ export default function Main() {
           const zoom = map.getZoom() ?? 0;
           if (zoom < 10) {
             setError("Please zoom in closer to view Street View");
-            setShowToast(true);
+            void setShowToast(true);
             return;
           }
-          streetViewService.getPanorama(
+          void streetViewService.getPanorama(
             {
               location: e.latLng,
               radius: 50,
@@ -143,16 +179,14 @@ export default function Main() {
             (data, status) => {
               if (
                 status === google.maps.StreetViewStatus.OK &&
-                data &&
-                data.location &&
-                data.location.latLng
+                data?.location?.latLng
               ) {
                 panorama.setPosition(data.location.latLng);
                 panorama.setVisible(true);
-                setStreetViewActive(true);
+                void setStreetViewActive(true);
               } else {
                 setError("No Street View available at this location.");
-                setShowToast(true);
+                void setShowToast(true);
               }
             }
           );
@@ -209,6 +243,17 @@ export default function Main() {
       {showToast && error && (
         <Toast message={error} onClose={() => setShowToast(false)} />
       )}
+      
+      {showDescriber && (
+        <StreetViewDescriber
+          latitude={currentPosition.latitude}
+          longitude={currentPosition.longitude}
+          heading={currentPosition.heading}
+          pitch={currentPosition.pitch}
+          onClose={() => setShowDescriber(false)}
+        />
+      )}
+      
       <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 to-blue-900">
         {!isMapReady ? (
           <div className="flex items-center justify-center">
@@ -221,9 +266,20 @@ export default function Main() {
               <h1 className="text-3xl font-bold text-white">Street View Explorer</h1>
               <Link
                 href="/api/auth/signout"
-                className="flex items-center rounded-lg bg-red-500 px-4 py-2 text-white transition-colors duration-200 hover:bg-red-600"
+                className="flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-white transition-colors duration-200 hover:bg-white/20"
               >
-                <LogOut className="mr-2 h-5 w-5" />
+                {user?.image ? (
+                  <Image 
+                    src={user.image} 
+                    alt={user.name ?? "User"} 
+                    width={20} 
+                    height={20} 
+                    className="h-5 w-5 rounded-full"
+                  />
+                ) : (
+                  <FcGoogle className="h-5 w-5" />
+                )}
+                <LogOut className="h-5 w-5" />
                 Sign Out
               </Link>
             </div>
@@ -248,23 +304,23 @@ export default function Main() {
             </div>
             <div className="mt-4 flex justify-center space-x-4">
               <button
-                onClick={captureStreetView}
-                className="flex items-center rounded-lg bg-blue-500 px-4 py-2 text-white transition-colors duration-200 hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
-                disabled={!streetViewActive}
+                onClick={exitStreetView}
+                className={`rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-red-600 ${
+                  streetViewActive ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
               >
-                <MapPin className="mr-2 h-5 w-5" />
-                Capture Pegman Location
+                Exit Street View
               </button>
-              {streetViewActive && (
-                <button
-                  onClick={exitStreetView}
-                  className="flex items-center rounded-lg bg-red-500 px-4 py-2 text-white transition-colors duration-200 hover:bg-red-600"
-                  aria-label="Exit Street View"
-                >
-                  <X className="mr-2 h-5 w-5" />
-                  Exit Street View
-                </button>
-              )}
+              
+              <button
+                onClick={captureStreetView}
+                className={`rounded-lg bg-blue-500 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-blue-600 ${
+                  streetViewActive ? "opacity-100" : "opacity-0 pointer-events-none"
+                }`}
+              >
+                Choose This View
+              </button>
+              
             </div>
           </div>
         )}

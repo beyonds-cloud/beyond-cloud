@@ -10,5 +10,5 @@ export default async function MainPage() {
     redirect("/");
   }
 
-  return <Main />;
+  return <Main user={session.user} />;
 } 
