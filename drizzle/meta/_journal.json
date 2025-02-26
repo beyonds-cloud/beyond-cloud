@@ -8,6 +8,13 @@
       "when": 1739935292667,
       "tag": "0000_left_proteus",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1740585462217,
+      "tag": "0001_round_rick_jones",
+      "breakpoints": true
     }
   ]
 }

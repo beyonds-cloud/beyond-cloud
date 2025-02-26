@@ -1,0 +1,1 @@
+ALTER TABLE "beyond-cloud_user" ADD COLUMN "last_image_request" timestamp DEFAULT NOW();
