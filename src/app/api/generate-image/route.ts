@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check if user has made a request in the last 10 minutes
+    // Check if user has made a request in the last 10 seconds
     const user = await db.query.users.findFirst({
       where: eq(users.id, session.user.id),
     });
@@ -49,12 +49,12 @@ export async function POST(request: NextRequest) {
       const lastRequest = new Date(user.lastImageRequest);
       const now = new Date();
       const timeDiff = now.getTime() - lastRequest.getTime();
-      const minutesDiff = Math.floor(timeDiff / 1000 / 60);
+      const secondsDiff = Math.floor(timeDiff / 1000);
       const timeout = 10;
 
-      if (minutesDiff < timeout) {
+      if (secondsDiff < timeout) {
         return NextResponse.json(
-          { error: `Please wait ${timeout- minutesDiff} minutes before making another request` },
+          { error: `Please wait ${timeout - secondsDiff} seconds before making another request` },
           { status: 429 }
         );
       }

@@ -36,6 +36,17 @@ interface ErrorResponse {
   error: string;
 }
 
+// Predefined prompt style options
+const PROMPT_TWISTS = [
+  { value: "", label: "None" },
+  { value: "the twist: the scene is in the style of the future, incorporate futuristic elements into each part of the scene", label: "Futuristic" },
+  { value: "the twist: the scene is in the style of the past, incorporate historical elements into each part of the scene", label: "Historical" },
+  { value: "the twist: the scene is in the style of post-apocalyptic world, incorporate post-apocalyptic elements into each part of the scene", label: "Post-Apocalyptic" },
+  { value: "the twist: the scene is in the style of fantasy world, incorporate fantasy elements into each part of the scene", label: "Fantasy" },
+  { value: "the twist: the scene is in the style of cyberpunk, incorporate cyberpunk elements into each part of the scene", label: "Cyberpunk" },
+  { value: "the twist: the scene is in the style of steampunk, incorporate steampunk elements into each part of the scene", label: "Steampunk" },
+];
+
 export default function StreetViewDescriber({
   latitude,
   longitude,
@@ -58,6 +69,10 @@ export default function StreetViewDescriber({
   // Combined loading state
   const [combinedLoading, setCombinedLoading] = useState(false);
 
+  // New states for prompt customization
+  const [selectedPromptStyle, setSelectedPromptStyle] = useState("");
+  const [customPromptAddition, setCustomPromptAddition] = useState("");
+
   const getDescription = async () => {
     if (!latitude || !longitude) {
       setError("Missing location coordinates");
@@ -71,6 +86,16 @@ export default function StreetViewDescriber({
     setGeneratedImageError(null);
     setEnhancedPrompt(null);
 
+    // Build prompt additions
+    let promptAdditions = "";
+    if (selectedPromptStyle) {
+      promptAdditions += selectedPromptStyle;
+    }
+    if (customPromptAddition) {
+      if (promptAdditions) promptAdditions += ". ";
+      promptAdditions += customPromptAddition;
+    }
+
     try {
       const response = await fetch("/api/streetview-description", {
         method: "POST",
@@ -82,6 +107,7 @@ export default function StreetViewDescriber({
           longitude,
           heading,
           pitch,
+          promptAdditions, // Send the prompt additions to the API
         }),
       });
 
@@ -201,6 +227,42 @@ export default function StreetViewDescriber({
             <p className="mb-4 text-gray-300">
               Generate an AI description of this Street View location and create an image from it.
             </p>
+            
+            {/* Prompt customization options */}
+            <div className="mb-4 mx-auto max-w-md space-y-3">
+              <div>
+                <label htmlFor="promptStyle" className="block text-sm font-medium text-gray-300 text-left mb-1">
+                  Twist (optional)
+                </label>
+                <select 
+                  id="promptStyle"
+                  value={selectedPromptStyle}
+                  onChange={(e) => setSelectedPromptStyle(e.target.value)}
+                  className="w-full rounded-md border-gray-600 bg-gray-700 text-white px-3 py-2 text-sm"
+                >
+                  {PROMPT_TWISTS.map((style) => (
+                    <option key={style.value} value={style.value}>
+                      {style.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label htmlFor="customPrompt" className="block text-sm font-medium text-gray-300 text-left mb-1">
+                  Custom Twist (optional)
+                </label>
+                <input
+                  id="customPrompt"
+                  type="text"
+                  value={customPromptAddition}
+                  onChange={(e) => setCustomPromptAddition(e.target.value)}
+                  placeholder="Add your own twist..."
+                  className="w-full rounded-md border-gray-600 bg-gray-700 text-white px-3 py-2 text-sm"
+                />
+              </div>
+            </div>
+            
             <div className="flex flex-col space-y-3 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0">
               <button
                 onClick={getDescription}

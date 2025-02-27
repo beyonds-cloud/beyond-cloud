@@ -1,0 +1,19 @@
+version: "3.9"
+services:
+  app:
+    platform: "linux/amd64"
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_CLIENTVAR: "clientvar"
+    working_dir: /app
+    ports:
+      - "3000:3000"
+    image: t3-app
+    environment:
+      - DATABASE_URL="postgresql://postgres:B3PGfnH7HoUYERsPzMzk@184.145.45.81:5432/postgres"
+      - AUTH_SECRET="4A2rNmHLkf9ri9afvAR10+9fji2Je2hSis1cDFYwrFs="
+      - NEXT_PUBLIC_MAPS_KEY="AIzaSyCOGmC7fEiFBGIcIfZ94WPKohuKsnjLNfU"
+      - AUTH_GOOGLE_ID="1083271961532-ig2r0k53puga0foiv74l15c4c99290hj.apps.googleusercontent.com"
+      - AUTH_GOOGLE_SECRET="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"

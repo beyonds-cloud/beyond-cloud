@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_MAPS_KEY ?? "";
 const PROJECT_ID = "onyx-robot-451205-n3";
@@ -12,6 +12,7 @@ interface LocationParams {
   longitude: number;
   heading?: number;
   pitch?: number;
+  promptAdditions?: string;
 }
 
 interface TokenResponse {
@@ -42,7 +43,7 @@ interface VertexAIResponse {
 
 export async function POST(request: NextRequest) {
   try {
-    const { latitude, longitude, heading, pitch } = await request.json() as LocationParams;
+    const { latitude, longitude, heading, pitch, promptAdditions } = await request.json() as LocationParams;
 
     if (!latitude || !longitude) {
       return NextResponse.json(
@@ -68,6 +69,14 @@ export async function POST(request: NextRequest) {
     const base64Image = Buffer.from(imageBuffer).toString('base64');
     
     // 2. Prepare the request for Vertex AI
+    // Base prompt
+    let promptText = "You are a \"detailed image describer.\" Your task is to analyze an image of a location and provide a very detailed description, including every part of the image and specifying the location of each element within the image (e.g., top left corner, center, bottom right, etc.). ignore any ui elements, be very descriptive, include things like which way we are facing, which way the roads are going and such, include detailed colours of important features and elements.";
+    
+    // Add any prompt additions if provided
+    if (promptAdditions?.trim()) {
+      promptText += " " + promptAdditions.trim();
+    }
+    
     const requestBody = {
       contents: [
         {
@@ -80,7 +89,7 @@ export async function POST(request: NextRequest) {
               }
             },
             {
-              text: "You are a \"detailed image describer.\" Your task is to analyze an image and provide a very detailed description, including every part of the image and specifying the location of each element within the image (e.g., top left corner, center, bottom right, etc.). ignore any ui elements, ignore any humans, be very descriptive, include things like which way we are facing, which way the roads are going and such, include detailed colours of important features and elements"
+              text: promptText
             }
           ]
         }
