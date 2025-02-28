@@ -100,7 +100,7 @@ export const authConfig = {
     sessionToken: {
       name: process.env.NODE_ENV === "production" ? `__Secure-next-auth.session-token` : `next-auth.session-token`,
       options: {
-        httpOnly: true,
+        httpOnly: false,
         sameSite: process.env.NODE_ENV === "production" ? "lax" : "lax",
         path: "/",
         secure: process.env.NODE_ENV === "production"
