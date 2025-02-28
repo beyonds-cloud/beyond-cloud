@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Loader2, Wand2, Camera } from "lucide-react";
+import Image from "next/image";
 
 interface StreetViewDescriberProps {
   latitude: number | null;
@@ -350,10 +351,12 @@ export default function StreetViewDescriber({
               <div className="flex flex-col">
                 <h3 className="mb-2 text-xl font-semibold text-white">Street View</h3>
                 <div className="relative overflow-hidden rounded-lg border-2 border-blue-500 pt-[56.25%] w-full">
-                  <img
+                  <Image
                     src={imageUrl}
                     alt="Street View"
-                    className="absolute inset-0 h-full w-full object-cover"
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
               </div>
@@ -362,10 +365,12 @@ export default function StreetViewDescriber({
                 <div className="flex flex-col">
                   <h3 className="mb-2 text-xl font-semibold text-white">AI Generated Image</h3>
                   <div className="relative overflow-hidden rounded-lg border-2 border-purple-500 pt-[56.25%] w-full">
-                    <img
+                    <Image
                       src={generatedImageUrl}
                       alt="AI Generated Scene"
-                      className="absolute inset-0 h-full w-full object-cover"
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
                 </div>

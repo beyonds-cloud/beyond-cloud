@@ -2,7 +2,7 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 // import { LatestPost } from "@/app/_components/post";
 import { auth } from "@/server/auth";
-import { api, HydrateClient } from "@/trpc/server";
+import { HydrateClient } from "@/trpc/server";
 import { FcGoogle } from "react-icons/fc";
 
 export default async function Home() {
