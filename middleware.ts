@@ -4,6 +4,7 @@ import { auth } from './src/server/auth';
 // This middleware handles authentication and redirects
 export default auth((req) => {
   const { nextUrl, auth: session } = req;
+  const isDevelopment = process.env.NODE_ENV === "development";
   
   // Get the pathname of the request
   const path = nextUrl.pathname;
@@ -15,6 +16,11 @@ export default auth((req) => {
   const isPublicPath = publicPaths.some(publicPath => 
     path === publicPath || path.startsWith(`${publicPath}/`)
   );
+  
+  // For development environment, be less restrictive
+  if (isDevelopment && path.startsWith('/api/auth')) {
+    return NextResponse.next();
+  }
   
   // If the path is not public and the user is not authenticated, redirect to the sign-in page
   if (!isPublicPath && !session) {

@@ -69,10 +69,18 @@ export const authConfig = {
       },
     }),
     redirect({ url, baseUrl }) {
+      const isDevelopment = process.env.NODE_ENV === "development";
+      
+      // Special handling for localhost in development
+      if (isDevelopment && (url.includes("localhost") || url.includes("127.0.0.1"))) {
+        return url;
+      }
+
       // Allow the OAuth callback URLs
       if (url.startsWith("/api/auth") || url.includes("/api/auth/callback")) {
         return url;
       }
+      
       // Allows relative callback URLs
       if (url.startsWith("/")) {
         return `${baseUrl}${url}`;
@@ -87,15 +95,15 @@ export const authConfig = {
   },
   // Trust the domain for session endpoint access
   trustHost: true,
-  // Remove the domain restriction for cookies in production
+  // Configure cookies based on environment
   cookies: {
     sessionToken: {
-      name: `__Secure-next-auth.session-token`,
+      name: process.env.NODE_ENV === "production" ? `__Secure-next-auth.session-token` : `next-auth.session-token`,
       options: {
         httpOnly: true,
-        sameSite: "lax",
+        sameSite: process.env.NODE_ENV === "production" ? "lax" : "lax",
         path: "/",
-        secure: true
+        secure: process.env.NODE_ENV === "production"
       }
     }
   },

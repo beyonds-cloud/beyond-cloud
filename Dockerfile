@@ -31,6 +31,7 @@ ARG AUTH_GOOGLE_ID
 ARG AUTH_GOOGLE_SECRET
 ARG AUTH_TRUST_HOST
 ARG NEXT_PUBLIC_MAPS_KEY
+ARG NODE_ENV=production
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -52,6 +53,7 @@ WORKDIR /app
 ENV NODE_ENV production
 ENV NEXTAUTH_URL=${NEXTAUTH_URL}
 ENV AUTH_SECRET=${AUTH_SECRET}
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
 ENV AUTH_GOOGLE_ID=${AUTH_GOOGLE_ID}
 ENV AUTH_GOOGLE_SECRET=${AUTH_GOOGLE_SECRET}
 ENV AUTH_TRUST_HOST=${AUTH_TRUST_HOST}
@@ -66,7 +68,9 @@ COPY --from=builder /app/package.json ./package.json
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
-EXPOSE 3000
-ENV PORT 3000
+# Expose the port set by the environment or default to 3000
+EXPOSE ${PORT:-3000}
+# Set default PORT to 3000 if not provided
+ENV PORT=${PORT:-3000}
 
 CMD ["server.js"]
