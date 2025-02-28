@@ -19,6 +19,7 @@ type User = {
   name?: string | null;
   email?: string | null;
   image?: string | null;
+  isPro?: boolean;
 };
 
 function Toast({ message, onClose }: { message: string; onClose: () => void }) {
@@ -261,68 +262,75 @@ export default function Main({ user }: { user?: User }) {
             <span className="ml-2 text-xl text-white">Loading Map...</span>
           </div>
         ) : (
-          <div className="w-full max-w-4xl p-4">
-            <div className="mb-4 flex items-center justify-between">
-              <h1 className="text-3xl font-bold text-white">Street View Explorer</h1>
-              <Link
-                href="/api/auth/signout"
-                className="flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-white transition-colors duration-200 hover:bg-white/20"
-              >
-                {user?.image ? (
-                  <Image 
-                    src={user.image} 
-                    alt={user.name ?? "User"} 
-                    width={20} 
-                    height={20} 
-                    className="h-5 w-5 rounded-full"
-                  />
-                ) : (
-                  <FcGoogle className="h-5 w-5" />
-                )}
-                <LogOut className="h-5 w-5" />
-                Sign Out
-              </Link>
-            </div>
+          <>
+            {user?.isPro && (
+              <div className="fixed bottom-4 left-4 z-50 rounded-lg bg-white/50 px-3 py-1 text-sm font-bold text-black backdrop-blur-sm">
+                PRO
+              </div>
+            )}
+            <div className="w-full max-w-4xl p-4">
+              <div className="mb-4 flex items-center justify-between">
+                <h1 className="text-3xl font-bold text-white">Street View Explorer</h1>
+                <Link
+                  href="/api/auth/signout"
+                  className="flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-white transition-colors duration-200 hover:bg-white/20"
+                >
+                  {user?.image ? (
+                    <Image 
+                      src={user.image} 
+                      alt={user.name ?? "User"} 
+                      width={20} 
+                      height={20} 
+                      className="h-5 w-5 rounded-full"
+                    />
+                  ) : (
+                    <FcGoogle className="h-5 w-5" />
+                  )}
+                  <LogOut className="h-5 w-5" />
+                  Sign Out
+                </Link>
+              </div>
 
-            <div className="relative h-[70vh] w-full overflow-hidden rounded-xl border-4 border-blue-500 shadow-lg">
-              <div
-                ref={mapElementRef}
-                id="map"
-                className={`absolute inset-0 h-full w-full transition-opacity duration-300 ${
-                  streetViewActive ? "opacity-0" : "opacity-100"
-                }`}
-              ></div>
-              <div
-                ref={streetViewElementRef}
-                id="street-view"
-                className={`absolute inset-0 h-full w-full transition-opacity duration-300 ${
-                  streetViewActive
-                    ? "pointer-events-auto opacity-100"
-                    : "pointer-events-none opacity-0"
-                }`}
-              ></div>
+              <div className="relative h-[70vh] w-full overflow-hidden rounded-xl border-4 border-blue-500 shadow-lg">
+                <div
+                  ref={mapElementRef}
+                  id="map"
+                  className={`absolute inset-0 h-full w-full transition-opacity duration-300 ${
+                    streetViewActive ? "opacity-0" : "opacity-100"
+                  }`}
+                ></div>
+                <div
+                  ref={streetViewElementRef}
+                  id="street-view"
+                  className={`absolute inset-0 h-full w-full transition-opacity duration-300 ${
+                    streetViewActive
+                      ? "pointer-events-auto opacity-100"
+                      : "pointer-events-none opacity-0"
+                  }`}
+                ></div>
+              </div>
+              <div className="mt-4 flex justify-center space-x-4">
+                <button
+                  onClick={exitStreetView}
+                  className={`rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-red-600 ${
+                    streetViewActive ? "opacity-100" : "opacity-0 pointer-events-none"
+                  }`}
+                >
+                  Exit Street View
+                </button>
+                
+                <button
+                  onClick={captureStreetView}
+                  className={`rounded-lg bg-blue-500 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-blue-600 ${
+                    streetViewActive ? "opacity-100" : "opacity-0 pointer-events-none"
+                  }`}
+                >
+                  Choose This View
+                </button>
+                
+              </div>
             </div>
-            <div className="mt-4 flex justify-center space-x-4">
-              <button
-                onClick={exitStreetView}
-                className={`rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-red-600 ${
-                  streetViewActive ? "opacity-100" : "opacity-0 pointer-events-none"
-                }`}
-              >
-                Exit Street View
-              </button>
-              
-              <button
-                onClick={captureStreetView}
-                className={`rounded-lg bg-blue-500 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-blue-600 ${
-                  streetViewActive ? "opacity-100" : "opacity-0 pointer-events-none"
-                }`}
-              >
-                Choose This View
-              </button>
-              
-            </div>
-          </div>
+          </>
         )}
       </main>
     </>

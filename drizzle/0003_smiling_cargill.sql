@@ -1,0 +1,1 @@
+ALTER TABLE "beyond-cloud_user" ADD COLUMN "is_pro" boolean DEFAULT false;

@@ -7,6 +7,7 @@ import {
   text,
   timestamp,
   varchar,
+  boolean,
 } from "drizzle-orm/pg-core";
 import { type AdapterAccount } from "next-auth/adapters";
 
@@ -52,6 +53,7 @@ export const users = createTable("user", {
   }).default(sql`CURRENT_TIMESTAMP`),
   image: varchar("image", { length: 255 }),
   lastImageRequest: timestamp("last_image_request").default(sql`NULL`),
+  isPro: boolean("is_pro").default(false),
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

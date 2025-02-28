@@ -1,6 +1,7 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
+import { eq } from "drizzle-orm";
 
 import { db } from "@/server/db";
 import {
@@ -20,6 +21,7 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      isPro?: boolean;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -59,12 +61,19 @@ export const authConfig = {
     verificationTokensTable: verificationTokens,
   }),
   callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+    session: async ({ session, user }) => {
+      const dbUser = await db.query.users.findFirst({
+        where: eq(users.id, user.id),
+      });
+      
+      return {
+        ...session,
+        user: {
+          ...session.user,
+          id: user.id,
+          isPro: dbUser?.isPro ?? false,
+        },
+      };
+    },
   },
 } satisfies NextAuthConfig;
