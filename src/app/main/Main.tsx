@@ -264,8 +264,21 @@ export default function Main({ user }: { user?: User }) {
         ) : (
           <>
             {user?.isPro && (
-              <div className="fixed bottom-4 left-4 z-50 rounded-lg bg-white/50 px-3 py-1 text-sm font-bold text-black backdrop-blur-sm">
-                PRO
+              <div className="group fixed bottom-4 left-4 z-50 rounded-lg bg-white/50 px-3 py-1 text-sm font-bold backdrop-blur-sm transition-all duration-300 hover:scale-110 hover:rotate-[-5deg] hover:bg-white/60 hover:shadow-[0_0_20px_rgba(255,255,255,0.7)]">
+                <span className="inline-block animate-[wiggle_2s_ease-in-out_infinite] group-hover:animate-[bounce_0.5s_ease-in-out_infinite]">P</span>
+                <span className="inline-block animate-[wiggle_2s_ease-in-out_infinite] group-hover:animate-[bounce_0.5s_ease-in-out_infinite] [animation-delay:0.1s]">R</span>
+                <span className="inline-block animate-[wiggle_2s_ease-in-out_infinite] group-hover:animate-[bounce_0.5s_ease-in-out_infinite] [animation-delay:0.2s]">O</span>
+                <style jsx>{`
+                  @keyframes wiggle {
+                    0%, 100% { transform: rotate(0deg); }
+                    25% { transform: rotate(3deg); }
+                    75% { transform: rotate(-3deg); }
+                  }
+                  @keyframes bounce {
+                    0%, 100% { transform: translateY(0); }
+                    50% { transform: translateY(-4px); }
+                  }
+                `}</style>
               </div>
             )}
             <div className="w-full max-w-4xl p-4">
