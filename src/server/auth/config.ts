@@ -61,19 +61,43 @@ export const authConfig = {
     verificationTokensTable: verificationTokens,
   }),
   callbacks: {
-    session: async ({ session, user }) => {
-      const dbUser = await db.query.users.findFirst({
-        where: eq(users.id, user.id),
-      });
-      
-      return {
-        ...session,
-        user: {
-          ...session.user,
-          id: user.id,
-          isPro: dbUser?.isPro ?? false,
-        },
-      };
-    },
+    session: ({ session, user }) => ({
+      ...session,
+      user: {
+        ...session.user,
+        id: user.id,
+      },
+    }),
+    redirect({ url, baseUrl }) {
+      // Allow the OAuth callback URLs
+      if (url.startsWith("/api/auth") || url.includes("/api/auth/callback")) {
+        return url;
+      }
+      // Allows relative callback URLs
+      if (url.startsWith("/")) {
+        return `${baseUrl}${url}`;
+      }
+      // Allows callback URLs on the same origin
+      else if (new URL(url).origin === baseUrl) {
+        return url;
+      }
+      // Default fallback using the NEXTAUTH_URL
+      return baseUrl;
+    }
   },
+  // Trust the domain for session endpoint access
+  trustHost: true,
+  // Remove the domain restriction for cookies in production
+  cookies: {
+    sessionToken: {
+      name: `__Secure-next-auth.session-token`,
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: true
+      }
+    }
+  },
+  debug: process.env.NODE_ENV === "development"
 } satisfies NextAuthConfig;
