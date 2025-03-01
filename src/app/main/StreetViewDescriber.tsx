@@ -40,12 +40,12 @@ interface ErrorResponse {
 // Predefined prompt style options
 const PROMPT_TWISTS = [
   { value: "", label: "None" },
-  { value: "the twist: the scene is in the style of the future, incorporate futuristic elements into each part of the scene", label: "Futuristic" },
-  { value: "the twist: the scene is in the style of the past, incorporate historical elements into each part of the scene", label: "Historical" },
-  { value: "the twist: the scene is in the style of post-apocalyptic world, incorporate post-apocalyptic elements into each part of the scene", label: "Post-Apocalyptic" },
-  { value: "the twist: the scene is in the style of fantasy world, incorporate fantasy elements into each part of the scene", label: "Fantasy" },
-  { value: "the twist: the scene is in the style of cyberpunk, incorporate cyberpunk elements into each part of the scene", label: "Cyberpunk" },
-  { value: "the twist: the scene is in the style of steampunk, incorporate steampunk elements into each part of the scene", label: "Steampunk" },
+  { value: "now, the twist: the scene is in the style of the future, incorporate futuristic elements into each part of the scene", label: "Futuristic" },
+  { value: "now, the twist: the scene is in the style of the past, incorporate historical elements into each part of the scene", label: "Historical" },
+  { value: "now, the twist: the scene is in the style of post-apocalyptic world, incorporate post-apocalyptic elements into each part of the scene", label: "Post-Apocalyptic" },
+  { value: "now, the twist: the scene is in the style of fantasy world, incorporate fantasy elements into each part of the scene", label: "Fantasy" },
+  { value: "now, the twist: the scene is in the style of cyberpunk, incorporate cyberpunk elements into each part of the scene", label: "Cyberpunk" },
+  { value: "now, the twist: the scene is in the style of steampunk, incorporate steampunk elements into each part of the scene", label: "Steampunk" },
 ];
 
 export default function StreetViewDescriber({
@@ -258,7 +258,7 @@ export default function StreetViewDescriber({
                   type="text"
                   value={customPromptAddition}
                   onChange={(e) => setCustomPromptAddition(e.target.value)}
-                  placeholder="Add your own twist..."
+                  placeholder="Now, the twist:..."
                   className="w-full rounded-md border-gray-600 bg-gray-700 text-white px-3 py-2 text-sm"
                 />
               </div>
