@@ -71,9 +71,12 @@ export const authConfig = {
     }),
     redirect({ url, baseUrl }) {
       const isDevelopment = process.env.NODE_ENV === "development";
-      
+
       // Special handling for localhost in development
-      if (isDevelopment && (url.includes("localhost") || url.includes("127.0.0.1"))) {
+      if (
+        isDevelopment &&
+        (url.includes("localhost") || url.includes("127.0.0.1"))
+      ) {
         return url;
       }
 
@@ -81,7 +84,7 @@ export const authConfig = {
       if (url.startsWith("/api/auth") || url.includes("/api/auth/callback")) {
         return url;
       }
-      
+
       // Allows relative callback URLs
       if (url.startsWith("/")) {
         return `${baseUrl}${url}`;
@@ -92,21 +95,24 @@ export const authConfig = {
       }
       // Default fallback using the NEXTAUTH_URL
       return baseUrl;
-    }
+    },
   },
   // Trust the domain for session endpoint access
   trustHost: true,
   // Configure cookies based on environment
   cookies: {
     sessionToken: {
-      name: process.env.NODE_ENV === "production" ? `__Secure-next-auth.session-token` : `next-auth.session-token`,
+      name:
+        process.env.NODE_ENV === "production"
+          ? `__Secure-next-auth.session-token`
+          : `next-auth.session-token`,
       options: {
         httpOnly: true,
         sameSite: process.env.NODE_ENV === "production" ? "lax" : "lax",
         path: "/",
-        secure: process.env.NODE_ENV === "production"
-      }
-    }
+        secure: process.env.NODE_ENV === "production",
+      },
+    },
   },
-  debug: process.env.NODE_ENV === "development"
+  debug: process.env.NODE_ENV === "development",
 } satisfies NextAuthConfig;

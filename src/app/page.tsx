@@ -6,7 +6,7 @@ import { HydrateClient } from "@/trpc/server";
 import { FaDiscord } from "react-icons/fa";
 
 export default async function Home() {
-//   const hello = await api.post.hello({ text: "from tRPC" });
+  //   const hello = await api.post.hello({ text: "from tRPC" });
   const session = await auth();
 
   // Redirect to /main if user is logged in

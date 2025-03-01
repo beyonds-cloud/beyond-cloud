@@ -3,14 +3,13 @@ import { Loader2, Wand2, Camera } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select"
-import { Input } from "@/components/ui/input"
-
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 
 interface StreetViewDescriberProps {
   latitude: number | null;
@@ -50,12 +49,36 @@ interface ErrorResponse {
 // Predefined prompt style options
 const PROMPT_TWISTS = [
   { value: "none", label: "None" },
-  { value: "now, the twist: the scene is in the style of the future, incorporate futuristic elements into each part of the scene", label: "Futuristic" },
-  { value: "now, the twist: the scene is in the style of the past, incorporate historical elements into each part of the scene", label: "Historical" },
-  { value: "now, the twist: the scene is in the style of post-apocalyptic world, incorporate post-apocalyptic elements into each part of the scene", label: "Post-Apocalyptic" },
-  { value: "now, the twist: the scene is in the style of fantasy world, incorporate fantasy elements into each part of the scene", label: "Fantasy" },
-  { value: "now, the twist: the scene is in the style of cyberpunk, incorporate cyberpunk elements into each part of the scene", label: "Cyberpunk" },
-  { value: "now, the twist: the scene is in the style of steampunk, incorporate steampunk elements into each part of the scene", label: "Steampunk" },
+  {
+    value:
+      "now, the twist: the scene is in the style of the future, incorporate futuristic elements into each part of the scene",
+    label: "Futuristic",
+  },
+  {
+    value:
+      "now, the twist: the scene is in the style of the past, incorporate historical elements into each part of the scene",
+    label: "Historical",
+  },
+  {
+    value:
+      "now, the twist: the scene is in the style of post-apocalyptic world, incorporate post-apocalyptic elements into each part of the scene",
+    label: "Post-Apocalyptic",
+  },
+  {
+    value:
+      "now, the twist: the scene is in the style of fantasy world, incorporate fantasy elements into each part of the scene",
+    label: "Fantasy",
+  },
+  {
+    value:
+      "now, the twist: the scene is in the style of cyberpunk, incorporate cyberpunk elements into each part of the scene",
+    label: "Cyberpunk",
+  },
+  {
+    value:
+      "now, the twist: the scene is in the style of steampunk, incorporate steampunk elements into each part of the scene",
+    label: "Steampunk",
+  },
 ];
 
 export default function StreetViewDescriber({
@@ -71,12 +94,16 @@ export default function StreetViewDescriber({
   const [description, setDescription] = useState<string | null>(null);
   const [enhancedPrompt, setEnhancedPrompt] = useState<string | null>(null);
   const [debugInfo, setDebugInfo] = useState<string | null>(null);
-  
+
   // States for generated image
   const [generatedImageLoading, setGeneratedImageLoading] = useState(false);
-  const [generatedImageError, setGeneratedImageError] = useState<string | null>(null);
-  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
-  
+  const [generatedImageError, setGeneratedImageError] = useState<string | null>(
+    null,
+  );
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(
+    null,
+  );
+
   // Combined loading state
   const [combinedLoading, setCombinedLoading] = useState(false);
 
@@ -123,15 +150,15 @@ export default function StreetViewDescriber({
       });
 
       if (!response.ok) {
-        const errorData = await response.json() as ErrorResponse;
+        const errorData = (await response.json()) as ErrorResponse;
         throw new Error(errorData.error || "Failed to get description");
       }
 
-      const data = await response.json() as ApiResponse;
+      const data = (await response.json()) as ApiResponse;
       console.log("API Response:", data);
-      
+
       setImageUrl(data.image);
-      
+
       // Process the AI response
       if (data.description?.error) {
         setError(`Error from AI service: ${data.description.error}`);
@@ -143,19 +170,24 @@ export default function StreetViewDescriber({
         setDescription("No description available");
         return null;
       } else {
-        const descriptionText = data.description?.candidates?.[0]?.content?.parts?.[0]?.text;
+        const descriptionText =
+          data.description?.candidates?.[0]?.content?.parts?.[0]?.text;
         if (descriptionText) {
           setDescription(descriptionText);
           return descriptionText;
         } else {
           setDescription("No description available");
-          setDebugInfo("Response format didn't contain expected text. Raw response: " + 
-            JSON.stringify(data.description, null, 2));
+          setDebugInfo(
+            "Response format didn't contain expected text. Raw response: " +
+              JSON.stringify(data.description, null, 2),
+          );
           return null;
         }
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : "An unknown error occurred");
+      setError(
+        err instanceof Error ? err.message : "An unknown error occurred",
+      );
       return null;
     } finally {
       setLoading(false);
@@ -164,7 +196,9 @@ export default function StreetViewDescriber({
 
   const generateImage = async (descriptionText: string) => {
     if (!descriptionText || descriptionText === "No description available") {
-      setGeneratedImageError("No valid description available to generate an image");
+      setGeneratedImageError(
+        "No valid description available to generate an image",
+      );
       return false;
     }
 
@@ -183,22 +217,24 @@ export default function StreetViewDescriber({
       });
 
       if (!response.ok) {
-        const errorData = await response.json() as ErrorResponse;
+        const errorData = (await response.json()) as ErrorResponse;
         throw new Error(errorData.error || "Failed to generate image");
       }
 
-      const data = await response.json() as GeneratedImageResponse;
+      const data = (await response.json()) as GeneratedImageResponse;
       if (data.error) {
         throw new Error(data.error);
       }
-      
+
       setGeneratedImageUrl(data.image);
       if (data.enhancedPrompt) {
         setEnhancedPrompt(data.enhancedPrompt);
       }
       return true;
     } catch (err) {
-      setGeneratedImageError(err instanceof Error ? err.message : "An unknown error occurred");
+      setGeneratedImageError(
+        err instanceof Error ? err.message : "An unknown error occurred",
+      );
       return false;
     } finally {
       setGeneratedImageLoading(false);
@@ -208,7 +244,7 @@ export default function StreetViewDescriber({
   // Combined function to get description and then generate image
   const getDescriptionAndGenerateImage = async () => {
     setCombinedLoading(true);
-    
+
     try {
       const descriptionText = await getDescription();
       if (descriptionText) {
@@ -236,37 +272,41 @@ export default function StreetViewDescriber({
         {!imageUrl && !description && !loading && !combinedLoading && (
           <div className="mb-6 text-center">
             <p className="mb-4 text-gray-300">
-              Generate an AI description of this Street View location and create an image from it.
+              Generate an AI description of this Street View location and create
+              an image from it.
             </p>
-            
+
             {/* Prompt customization options */}
-            <div className="mb-4 mx-auto max-w-md space-y-3">
+            <div className="mx-auto mb-4 max-w-md space-y-3">
               <div>
-                <label htmlFor="promptStyle" className="block text-sm font-medium text-gray-300 text-left mb-1">
+                <label
+                  htmlFor="promptStyle"
+                  className="mb-1 block text-left text-sm font-medium text-gray-300"
+                >
                   Twist (optional)
                 </label>
-                <Select 
+                <Select
                   value={selectedPromptStyle}
                   onValueChange={(value) => setSelectedPromptStyle(value)}
                 >
-                  <SelectTrigger className="w-full rounded-md border-gray-600 bg-gray-700 text-white px-3 py-2 text-sm">
+                  <SelectTrigger className="w-full rounded-md border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white">
                     <SelectValue placeholder="Select a twist" />
                   </SelectTrigger>
                   <SelectContent>
                     {PROMPT_TWISTS.map((style) => (
-                      <SelectItem 
-                        key={style.value} 
-                        value={style.value}
-                      >
+                      <SelectItem key={style.value} value={style.value}>
                         {style.label}
                       </SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <div>
-                <label htmlFor="customPrompt" className="block text-sm font-medium text-gray-300 text-left mb-1">
+                <label
+                  htmlFor="customPrompt"
+                  className="mb-1 block text-left text-sm font-medium text-gray-300"
+                >
                   Custom Twist (optional)
                 </label>
                 <Input
@@ -275,11 +315,11 @@ export default function StreetViewDescriber({
                   value={customPromptAddition}
                   onChange={(e) => setCustomPromptAddition(e.target.value)}
                   placeholder="Now, the twist:..."
-                  className="w-full rounded-md border-gray-600 bg-gray-700 text-white px-3 py-2 text-sm"
+                  className="w-full rounded-md border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white"
                 />
               </div>
             </div>
-            
+
             <div className="flex flex-col space-y-3 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0">
               <Button
                 onClick={getDescription}
@@ -289,7 +329,7 @@ export default function StreetViewDescriber({
                 <Camera className="h-5 w-5" />
                 Get Description Only
               </Button>
-              
+
               <Button
                 onClick={getDescriptionAndGenerateImage}
                 className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 font-semibold text-white hover:from-blue-700 hover:to-purple-700"
@@ -306,7 +346,9 @@ export default function StreetViewDescriber({
           <div className="flex flex-col items-center justify-center py-10">
             <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
             <p className="mt-4 text-gray-300">
-              {loading ? "Generating AI description..." : "Processing your request..."}
+              {loading
+                ? "Generating AI description..."
+                : "Processing your request..."}
             </p>
             {generatedImageLoading && (
               <p className="mt-2 text-purple-300">
@@ -326,7 +368,9 @@ export default function StreetViewDescriber({
         {debugInfo && (
           <div className="mb-4 rounded-lg bg-gray-700 p-3 text-gray-300">
             <details>
-              <summary className="cursor-pointer font-bold">Debug Info (Click to expand)</summary>
+              <summary className="cursor-pointer font-bold">
+                Debug Info (Click to expand)
+              </summary>
               <pre className="mt-2 overflow-auto text-xs">{debugInfo}</pre>
             </details>
           </div>
@@ -346,7 +390,7 @@ export default function StreetViewDescriber({
                 </Button>
               </div>
             )}
-            
+
             {generatedImageLoading && (
               <div className="mb-4 flex justify-center">
                 <div className="flex items-center gap-2 rounded-lg bg-purple-800 px-4 py-2 text-white">
@@ -355,7 +399,7 @@ export default function StreetViewDescriber({
                 </div>
               </div>
             )}
-            
+
             {generatedImageError && (
               <div className="mb-4 rounded-lg bg-red-500/20 p-3 text-red-300">
                 <p className="font-bold">Image Generation Error:</p>
@@ -365,8 +409,10 @@ export default function StreetViewDescriber({
 
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
               <div className="flex flex-col">
-                <h3 className="mb-2 text-xl font-semibold text-white">Street View</h3>
-                <div className="relative overflow-hidden rounded-lg border-2 border-blue-500 pt-[56.25%] w-full">
+                <h3 className="mb-2 text-xl font-semibold text-white">
+                  Street View
+                </h3>
+                <div className="relative w-full overflow-hidden rounded-lg border-2 border-blue-500 pt-[56.25%]">
                   <Image
                     src={imageUrl}
                     alt="Street View"
@@ -376,11 +422,13 @@ export default function StreetViewDescriber({
                   />
                 </div>
               </div>
-              
+
               {generatedImageUrl && (
                 <div className="flex flex-col">
-                  <h3 className="mb-2 text-xl font-semibold text-white">AI Generated Image</h3>
-                  <div className="relative overflow-hidden rounded-lg border-2 border-purple-500 pt-[56.25%] w-full">
+                  <h3 className="mb-2 text-xl font-semibold text-white">
+                    AI Generated Image
+                  </h3>
+                  <div className="relative w-full overflow-hidden rounded-lg border-2 border-purple-500 pt-[56.25%]">
                     <Image
                       src={generatedImageUrl}
                       alt="AI Generated Scene"
@@ -397,4 +445,4 @@ export default function StreetViewDescriber({
       </div>
     </div>
   );
-} 
+}
