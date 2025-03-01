@@ -9,3 +9,4 @@
 - do `pnpm install`
 - do `pnpm db:studio` in your terminal
 - do `pnpm dev` in your terminal
+- YAYYYYY
