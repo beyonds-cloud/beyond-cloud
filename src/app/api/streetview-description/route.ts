@@ -205,9 +205,11 @@ export async function POST(request: NextRequest) {
     
     return NextResponse.json(processedResponse);
   } catch (error) {
-    console.error("Error processing request:", error);
+    // Log the error for debugging but don't expose it
+    console.error('Error generating description:', error);
+    
     return NextResponse.json(
-      { error: "Failed to process request" },
+      { error: 'Failed to generate description. Please try again.' },
       { status: 500 }
     );
   }

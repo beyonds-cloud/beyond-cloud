@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 // import { LatestPost } from "@/app/_components/post";
 import { auth } from "@/server/auth";
 import { HydrateClient } from "@/trpc/server";
-import { FcGoogle } from "react-icons/fc";
+import { FaDiscord } from "react-icons/fa";
 
 export default async function Home() {
 //   const hello = await api.post.hello({ text: "from tRPC" });
@@ -29,8 +29,8 @@ export default async function Home() {
               href="/api/auth/signin"
               className="flex items-center gap-2 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
             >
-              <FcGoogle className="h-6 w-6" />
-              Sign in with Google
+              <FaDiscord className="h-6 w-6" />
+              Sign in with Discord
             </Link>
           </div>
         </div>

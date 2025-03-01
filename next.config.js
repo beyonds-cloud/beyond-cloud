@@ -14,6 +14,11 @@ const config = {
         hostname: 'lh3.googleusercontent.com',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: 'cdn.discordapp.com',
+        pathname: '/**',
+      },
     ],
   },
 };

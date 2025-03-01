@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { auth } from "@/server/auth";
 import { db } from "@/server/db";
 import { users } from "@/server/db/schema";
@@ -141,9 +141,11 @@ export async function POST(request: NextRequest) {
       }, { status: 500 });
     }
   } catch (error) {
-    console.error("Error processing image generation request:", error);
+    // Log the error for debugging but don't expose it
+    console.error('Error generating image:', error);
+    
     return NextResponse.json(
-      { error: "Failed to generate image" },
+      { error: 'Failed to generate image. Please try again.' },
       { status: 500 }
     );
   }
