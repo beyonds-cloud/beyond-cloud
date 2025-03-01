@@ -66,6 +66,7 @@ export const authConfig = {
       user: {
         ...session.user,
         id: user.id,
+        isPro: (user as { isPro?: boolean }).isPro,
       },
     }),
     redirect({ url, baseUrl }) {
