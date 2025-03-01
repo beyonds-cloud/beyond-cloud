@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
     
     // Add any prompt additions if provided
     if (promptAdditions?.trim()) {
-      promptText += " now, the twist:" + promptAdditions.trim();
+      promptText += " the following is the twist, incorporate it into every part of the description in some way: " + promptAdditions.trim();
     }
     
     const requestBody = {
