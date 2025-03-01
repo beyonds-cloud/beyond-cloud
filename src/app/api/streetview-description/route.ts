@@ -1,6 +1,7 @@
 import { type NextRequest, NextResponse } from "next/server";
+import env from "@beam-australia/react-env";
 
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_MAPS_KEY ?? "";
+const GOOGLE_MAPS_API_KEY = env("MAPS_KEY") ?? "";
 const PROJECT_ID = "onyx-robot-451205-n3";
 const LOCATION_ID = "us-central1";
 const API_ENDPOINT = "us-central1-aiplatform.googleapis.com";

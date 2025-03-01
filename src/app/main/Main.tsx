@@ -7,6 +7,7 @@ import Link from "next/link";
 import Script from "next/script";
 import Image from "next/image";
 import StreetViewDescriber from "./StreetViewDescriber";
+import env from "@beam-australia/react-env";
 
 declare global {
   interface Window {
@@ -40,7 +41,7 @@ function Toast({ message, onClose }: { message: string; onClose: () => void }) {
 }
 
 export default function Main({ user }: { user?: User }) {
-  const apiKey = process.env.NEXT_PUBLIC_MAPS_KEY ?? "";
+  const apiKey = env("MAPS_KEY") ?? "";
   const [isMapReady, setIsMapReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [streetViewActive, setStreetViewActive] = useState(false);
