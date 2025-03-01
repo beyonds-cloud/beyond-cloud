@@ -7,7 +7,6 @@ import Link from "next/link";
 import Script from "next/script";
 import Image from "next/image";
 import StreetViewDescriber from "./StreetViewDescriber";
-import env from "@beam-australia/react-env";
 
 declare global {
   interface Window {
@@ -40,8 +39,7 @@ function Toast({ message, onClose }: { message: string; onClose: () => void }) {
   );
 }
 
-export default function Main({ user }: { user?: User }) {
-  const apiKey = env("MAPS_KEY") ?? "";
+export default function Main({ user, mapsKey }: { user?: User; mapsKey: string }) {
   const [isMapReady, setIsMapReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [streetViewActive, setStreetViewActive] = useState(false);
@@ -220,7 +218,7 @@ export default function Main({ user }: { user?: User }) {
     }
   }, [isMapReady]);
 
-  if (!apiKey) {
+  if (!mapsKey) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-900">
         <div className="max-w-md p-6 text-center">
@@ -229,7 +227,7 @@ export default function Main({ user }: { user?: User }) {
           </div>
           <h2 className="mb-2 text-xl font-semibold text-white">Error Loading Map</h2>
           <p className="text-gray-300">
-            Google Maps API key is missing. Please set NEXT_PUBLIC_MAPS_KEY environment variable.
+            Google Maps API key is missing. Please check your environment configuration.
           </p>
         </div>
       </div>
@@ -239,7 +237,7 @@ export default function Main({ user }: { user?: User }) {
   return (
     <>
       <Script
-        src={`https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`}
+        src={`https://maps.googleapis.com/maps/api/js?key=${mapsKey}&libraries=places`}
         onLoad={handleGoogleMapsLoad}
       />
       {showToast && error && (

@@ -1,6 +1,7 @@
+import { env } from "@/env.js";
+import Main from "./Main";
 import { auth } from "@/server/auth";
 import { redirect } from "next/navigation";
-import Main from "./Main";
 
 export default async function MainPage() {
   const session = await auth();
@@ -10,5 +11,5 @@ export default async function MainPage() {
     redirect("/");
   }
 
-  return <Main user={session.user} />;
+  return <Main user={session.user} mapsKey={env.NEXT_PUBLIC_MAPS_KEY} />;
 } 
