@@ -23,6 +23,7 @@ ARG DATABASE_URL
 ARG NEXT_PUBLIC_MAPS_KEY
 ARG NEXTAUTH_URL
 ARG AUTH_SECRET
+ARG NEXTAUTH_SECRET
 ARG AUTH_DISCORD_ID
 ARG AUTH_DISCORD_SECRET
 ARG AUTH_TRUST_HOST
@@ -33,7 +34,7 @@ ENV DATABASE_URL=${DATABASE_URL}
 ENV NEXT_PUBLIC_MAPS_KEY=${NEXT_PUBLIC_MAPS_KEY}
 ENV NEXTAUTH_URL=${NEXTAUTH_URL}
 ENV AUTH_SECRET=${AUTH_SECRET}
-ENV NEXTAUTH_SECRET=${AUTH_SECRET}
+ENV NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
 ENV AUTH_DISCORD_ID=${AUTH_DISCORD_ID}
 ENV AUTH_DISCORD_SECRET=${AUTH_DISCORD_SECRET}
 ENV AUTH_TRUST_HOST=${AUTH_TRUST_HOST}
@@ -56,12 +57,6 @@ RUN \
 FROM --platform=linux/amd64 gcr.io/distroless/nodejs20-debian12 AS runner
 WORKDIR /app
 
-# The distroless image doesn't need ARGs since it receives env vars from Cloud Run
-# But we need to set the defaults for the ENV vars
-
-ENV NODE_ENV=production
-ENV PORT=3000
-
 # Copy built application
 COPY --from=builder /app/next.config.js ./
 COPY --from=builder /app/public ./public
@@ -70,6 +65,10 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 
 # Expose the port
-EXPOSE ${PORT}
+EXPOSE ${PORT:-3000}
+ENV PORT=${PORT:-3000}
+
+# Environment variables are provided by Cloud Run at runtime
+# No need to set them here explicitly
 
 CMD ["server.js"]
