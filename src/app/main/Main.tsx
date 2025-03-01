@@ -7,6 +7,8 @@ import Link from "next/link";
 import Script from "next/script";
 import Image from "next/image";
 import StreetViewDescriber from "./StreetViewDescriber";
+import { Button } from "@/components/ui/button"
+
 
 declare global {
   interface Window {
@@ -322,23 +324,23 @@ export default function Main({ user, mapsKey }: { user?: User; mapsKey: string }
                 ></div>
               </div>
               <div className="mt-4 flex justify-center space-x-4">
-                <button
+                <Button
                   onClick={exitStreetView}
                   className={`rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-red-600 ${
                     streetViewActive ? "opacity-100" : "opacity-0 pointer-events-none"
                   }`}
                 >
                   Exit Street View
-                </button>
+                </Button>
                 
-                <button
+                <Button
                   onClick={captureStreetView}
                   className={`rounded-lg bg-blue-500 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-blue-600 ${
                     streetViewActive ? "opacity-100" : "opacity-0 pointer-events-none"
                   }`}
                 >
                   Choose This View
-                </button>
+                </Button>
                 
               </div>
             </div>

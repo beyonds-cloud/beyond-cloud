@@ -1,6 +1,16 @@
 import { useState } from "react";
 import { Loader2, Wand2, Camera } from "lucide-react";
 import Image from "next/image";
+import { Button } from "@/components/ui/button";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
+import { Input } from "@/components/ui/input"
+
 
 interface StreetViewDescriberProps {
   latitude: number | null;
@@ -39,7 +49,7 @@ interface ErrorResponse {
 
 // Predefined prompt style options
 const PROMPT_TWISTS = [
-  { value: "", label: "None" },
+  { value: "none", label: "None" },
   { value: "now, the twist: the scene is in the style of the future, incorporate futuristic elements into each part of the scene", label: "Futuristic" },
   { value: "now, the twist: the scene is in the style of the past, incorporate historical elements into each part of the scene", label: "Historical" },
   { value: "now, the twist: the scene is in the style of post-apocalyptic world, incorporate post-apocalyptic elements into each part of the scene", label: "Post-Apocalyptic" },
@@ -89,7 +99,7 @@ export default function StreetViewDescriber({
 
     // Build prompt additions
     let promptAdditions = "";
-    if (selectedPromptStyle) {
+    if (selectedPromptStyle && selectedPromptStyle !== "none") {
       promptAdditions += selectedPromptStyle;
     }
     if (customPromptAddition) {
@@ -212,12 +222,12 @@ export default function StreetViewDescriber({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
       <div className="relative max-h-[90vh] w-[95vw] max-w-6xl overflow-auto rounded-lg bg-gray-800 p-6 shadow-xl">
-        <button
+        <Button
           onClick={onClose}
           className="absolute right-4 top-4 rounded-full bg-red-500 p-2 text-white hover:bg-red-600"
         >
           ✕
-        </button>
+        </Button>
 
         <h2 className="mb-4 text-center text-2xl font-bold text-white">
           Street View AI Experience
@@ -235,25 +245,31 @@ export default function StreetViewDescriber({
                 <label htmlFor="promptStyle" className="block text-sm font-medium text-gray-300 text-left mb-1">
                   Twist (optional)
                 </label>
-                <select 
-                  id="promptStyle"
+                <Select 
                   value={selectedPromptStyle}
-                  onChange={(e) => setSelectedPromptStyle(e.target.value)}
-                  className="w-full rounded-md border-gray-600 bg-gray-700 text-white px-3 py-2 text-sm"
+                  onValueChange={(value) => setSelectedPromptStyle(value)}
                 >
-                  {PROMPT_TWISTS.map((style) => (
-                    <option key={style.value} value={style.value}>
-                      {style.label}
-                    </option>
-                  ))}
-                </select>
+                  <SelectTrigger className="w-full rounded-md border-gray-600 bg-gray-700 text-white px-3 py-2 text-sm">
+                    <SelectValue placeholder="Select a twist" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {PROMPT_TWISTS.map((style) => (
+                      <SelectItem 
+                        key={style.value} 
+                        value={style.value}
+                      >
+                        {style.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               
               <div>
                 <label htmlFor="customPrompt" className="block text-sm font-medium text-gray-300 text-left mb-1">
                   Custom Twist (optional)
                 </label>
-                <input
+                <Input
                   id="customPrompt"
                   type="text"
                   value={customPromptAddition}
@@ -265,23 +281,23 @@ export default function StreetViewDescriber({
             </div>
             
             <div className="flex flex-col space-y-3 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0">
-              <button
+              <Button
                 onClick={getDescription}
                 className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
                 disabled={loading || combinedLoading}
               >
                 <Camera className="h-5 w-5" />
                 Get Description Only
-              </button>
+              </Button>
               
-              <button
+              <Button
                 onClick={getDescriptionAndGenerateImage}
                 className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 font-semibold text-white hover:from-blue-700 hover:to-purple-700"
                 disabled={loading || combinedLoading}
               >
                 <Wand2 className="h-5 w-5" />
                 Describe & Generate Image
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -320,14 +336,14 @@ export default function StreetViewDescriber({
           <>
             {!generatedImageUrl && !generatedImageLoading && (
               <div className="mb-4 flex justify-center">
-                <button
+                <Button
                   onClick={() => generateImage(description)}
                   className="flex items-center gap-2 rounded-lg bg-purple-600 px-4 py-2 font-semibold text-white hover:bg-purple-700"
                   disabled={generatedImageLoading}
                 >
                   <Wand2 className="h-5 w-5" />
                   Generate Image from Description
-                </button>
+                </Button>
               </div>
             )}
             
