@@ -4,7 +4,7 @@ import { auth } from './src/server/auth';
 // This middleware handles authentication and redirects
 export default auth((req) => {
   const { nextUrl, auth: session } = req;
-  const isDevelopment = process.env.NODE_ENV === "production";
+  const isDevelopment = process.env.NODE_ENV === "development";
   
   // Get the pathname of the request
   const path = nextUrl.pathname;

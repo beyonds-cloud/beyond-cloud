@@ -1,7 +1,6 @@
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { type DefaultSession, type NextAuthConfig } from "next-auth";
-// import GoogleProvider from "next-auth/providers/google";
-import DiscordProvider from "next-auth/providers/discord";
+import GoogleProvider from "next-auth/providers/google";
 // import { eq } from "drizzle-orm";
 
 import { db } from "@/server/db";
@@ -41,13 +40,9 @@ declare module "next-auth" {
  */
 export const authConfig = {
   providers: [
-    // GoogleProvider({
-    //   clientId: process.env.AUTH_GOOGLE_ID,
-    //   clientSecret: process.env.AUTH_GOOGLE_SECRET,
-    // }),
-    DiscordProvider({
-      clientId: process.env.AUTH_DISCORD_ID,
-      clientSecret: process.env.AUTH_DISCORD_SECRET,
+    GoogleProvider({
+      clientId: process.env.AUTH_GOOGLE_ID,
+      clientSecret: process.env.AUTH_GOOGLE_SECRET,
     }),
     /**
      * ...add more providers here.
@@ -71,7 +66,6 @@ export const authConfig = {
       user: {
         ...session.user,
         id: user.id,
-        isPro: (user as { isPro?: boolean }).isPro,
       },
     }),
     redirect({ url, baseUrl }) {
@@ -106,7 +100,7 @@ export const authConfig = {
     sessionToken: {
       name: process.env.NODE_ENV === "production" ? `__Secure-next-auth.session-token` : `next-auth.session-token`,
       options: {
-        httpOnly: false,
+        httpOnly: true,
         sameSite: process.env.NODE_ENV === "production" ? "lax" : "lax",
         path: "/",
         secure: process.env.NODE_ENV === "production"
