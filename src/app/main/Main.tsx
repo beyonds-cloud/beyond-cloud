@@ -157,10 +157,10 @@ export default function Main({
           addressControl: false,
           fullscreenControl: false,
           linksControl: true,
-          clickToGo: false,
+          clickToGo: true,
           panControl: true,
           zoomControl: true,
-          showRoadLabels: false,
+          showRoadLabels: true,
           disableDefaultUI: false,
         },
       );
