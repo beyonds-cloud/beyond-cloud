@@ -303,11 +303,11 @@ export default function StreetViewDescriber({
               </div>
 
               <div>
-                <label htmlFor="customPrompt" className="block text-sm font-medium text-gray-300 text-left mb-1">
+                <Label htmlFor="customPrompt" className="block text-sm font-medium text-gray-300 text-left mb-1">
                   Custom Twist (optional)
-                </label>
+                </Label>
                 <div className="relative">
-                  <input
+                  <Input
                     id="customPrompt"
                     type="text"
                     value={customPromptAddition}
