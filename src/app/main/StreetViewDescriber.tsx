@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Wand2, Camera } from "lucide-react";
+import { Loader2, Wand2, Camera, Download } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -420,6 +420,20 @@ export default function StreetViewDescriber({
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
+                <Button
+                  onClick={() => {
+                    const link = document.createElement('a');
+                    link.href = imageUrl || '';
+                    link.download = 'street-view.jpg';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                  className="mt-2 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+                >
+                  <Download className="h-4 w-4" />
+                  Download Street View
+                </Button>
               </div>
 
               {generatedImageUrl && (
@@ -436,6 +450,20 @@ export default function StreetViewDescriber({
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
+                  <Button
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = generatedImageUrl || '';
+                      link.download = 'ai-generated-image.jpg';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                    className="mt-2 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download AI Generated Image
+                  </Button>
                 </div>
               )}
             </div>
