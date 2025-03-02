@@ -10,6 +10,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 interface StreetViewDescriberProps {
   latitude: number | null;
@@ -256,40 +266,30 @@ export default function StreetViewDescriber({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-      <div className="relative max-h-[90vh] w-[95vw] max-w-6xl overflow-auto rounded-lg bg-gray-800 p-6 shadow-xl">
-        <Button
-          onClick={onClose}
-          className="absolute right-4 top-4 rounded-full bg-red-500 p-2 text-white hover:bg-red-600"
-        >
-          ✕
-        </Button>
-
-        <h2 className="mb-4 text-center text-2xl font-bold text-white">
-          Street View AI Experience
-        </h2>
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-h-[90vh] max-w-6xl overflow-auto bg-gray-800 text-white">
+        <DialogHeader>
+          <DialogTitle className="text-2xl font-bold text-white">
+            Street View AI Experience
+          </DialogTitle>
+          <DialogDescription className="text-gray-300">
+            Generate an AI description of this Street View location and create an image from it.
+          </DialogDescription>
+        </DialogHeader>
 
         {!imageUrl && !description && !loading && !combinedLoading && (
           <div className="mb-6 text-center">
-            <p className="mb-4 text-gray-300">
-              Generate an AI description of this Street View location and create
-              an image from it.
-            </p>
-
             {/* Prompt customization options */}
             <div className="mx-auto mb-4 max-w-md space-y-3">
               <div>
-                <label
-                  htmlFor="promptStyle"
-                  className="mb-1 block text-left text-sm font-medium text-gray-300"
-                >
+                <Label htmlFor="promptStyle" className="text-sm font-medium text-gray-300">
                   Twist (optional)
-                </label>
+                </Label>
                 <Select
                   value={selectedPromptStyle}
                   onValueChange={(value) => setSelectedPromptStyle(value)}
                 >
-                  <SelectTrigger className="w-full rounded-md border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white">
+                  <SelectTrigger id="promptStyle" className="w-full rounded-md border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white">
                     <SelectValue placeholder="Select a twist" />
                   </SelectTrigger>
                   <SelectContent>
@@ -303,12 +303,9 @@ export default function StreetViewDescriber({
               </div>
 
               <div>
-                <label
-                  htmlFor="customPrompt"
-                  className="mb-1 block text-left text-sm font-medium text-gray-300"
-                >
+                <Label htmlFor="customPrompt" className="text-sm font-medium text-gray-300">
                   Custom Twist (optional)
-                </label>
+                </Label>
                 <Input
                   id="customPrompt"
                   type="text"
@@ -323,8 +320,9 @@ export default function StreetViewDescriber({
             <div className="flex flex-col space-y-3 sm:flex-row sm:justify-center sm:space-x-4 sm:space-y-0">
               <Button
                 onClick={getDescription}
-                className="flex items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 font-semibold text-white hover:bg-blue-700"
+                className="flex items-center justify-center gap-2"
                 disabled={loading || combinedLoading}
+                variant="default"
               >
                 <Camera className="h-5 w-5" />
                 Get Description Only
@@ -332,7 +330,7 @@ export default function StreetViewDescriber({
 
               <Button
                 onClick={getDescriptionAndGenerateImage}
-                className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 px-4 py-2 font-semibold text-white hover:from-blue-700 hover:to-purple-700"
+                className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
                 disabled={loading || combinedLoading}
               >
                 <Wand2 className="h-5 w-5" />
@@ -348,13 +346,8 @@ export default function StreetViewDescriber({
             <p className="mt-4 text-gray-300">
               {loading
                 ? "Generating AI description..."
-                : "Processing your request..."}
+                : "Creating image from description..."}
             </p>
-            {generatedImageLoading && (
-              <p className="mt-2 text-purple-300">
-                Creating image from description...
-              </p>
-            )}
           </div>
         )}
 
@@ -442,7 +435,7 @@ export default function StreetViewDescriber({
             </div>
           </>
         )}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

@@ -1,13 +1,15 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { MapPin, Loader2, X, LogOut, AlertCircle } from "lucide-react";
+import { Loader2, X, AlertCircle, LogOut } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import Link from "next/link";
 import Script from "next/script";
-import Image from "next/image";
 import StreetViewDescriber from "./StreetViewDescriber";
 import { Button } from "@/components/ui/button";
+import { Toaster } from "@/components/ui/sonner";
+import { toast } from "sonner";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 declare global {
   interface Window {
@@ -22,26 +24,6 @@ type User = {
   image?: string | null;
   isPro?: boolean;
 };
-
-function Toast({ message, onClose }: { message: string; onClose: () => void }) {
-  useEffect(() => {
-    const timer = setTimeout(onClose, 5000);
-    return () => clearTimeout(timer);
-  }, [onClose]);
-
-  return (
-    <div className="fixed right-4 top-4 z-50 flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-white shadow-lg">
-      <AlertCircle className="h-5 w-5" />
-      <span>{message}</span>
-      <button
-        onClick={onClose}
-        className="ml-2 rounded-full p-1 hover:bg-red-600"
-      >
-        <X className="h-4 w-4" />
-      </button>
-    </div>
-  );
-}
 
 export default function Main({
   user,
@@ -58,7 +40,6 @@ export default function Main({
   const mapElementRef = useRef<HTMLDivElement>(null);
   const streetViewElementRef = useRef<HTMLDivElement>(null);
   const positionUpdateTimeoutRef = useRef<NodeJS.Timeout>();
-  const [showToast, setShowToast] = useState(false);
   const [showDescriber, setShowDescriber] = useState(false);
   const [currentPosition, setCurrentPosition] = useState<{
     latitude: number | null;
@@ -195,7 +176,6 @@ export default function Main({
           const zoom = map.getZoom() ?? 0;
           if (zoom < 10) {
             setError("Please zoom in closer to view Street View");
-            void setShowToast(true);
             return;
           }
           void streetViewService.getPanorama(
@@ -214,7 +194,6 @@ export default function Main({
                 void setStreetViewActive(true);
               } else {
                 setError("No Street View available at this location.");
-                void setShowToast(true);
               }
             },
           );
@@ -248,6 +227,16 @@ export default function Main({
     }
   }, [isMapReady]);
 
+  useEffect(() => {
+    if (error) {
+      toast.error(error, {
+        description: "Please try again.",
+        icon: <AlertCircle className="h-5 w-5" />,
+      });
+      setError(null);
+    }
+  }, [error]);
+
   if (!mapsKey) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-gray-900">
@@ -269,13 +258,11 @@ export default function Main({
 
   return (
     <>
+      <Toaster position="top-right" />
       <Script
         src={`https://maps.googleapis.com/maps/api/js?key=${mapsKey}&libraries=places`}
         onLoad={handleGoogleMapsLoad}
       />
-      {showToast && error && (
-        <Toast message={error} onClose={() => setShowToast(false)} />
-      )}
 
       {showDescriber && (
         <StreetViewDescriber
@@ -287,7 +274,7 @@ export default function Main({
         />
       )}
 
-      <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-900 to-blue-900">
+      <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-green-700 to-blue-600">
         {!isMapReady ? (
           <div className="flex items-center justify-center">
             <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
@@ -341,18 +328,15 @@ export default function Main({
                   className="flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-white transition-colors duration-200 hover:bg-white/20"
                 >
                   {user?.image ? (
-                    <Image
-                      src={user.image}
-                      alt={user.name ?? "User"}
-                      width={20}
-                      height={20}
-                      className="h-5 w-5 rounded-full"
-                    />
+                    <Avatar className="h-8 w-8">
+                      <AvatarImage src={user.image} alt={user.name ?? "User"} />
+                      <AvatarFallback>CN</AvatarFallback>
+                    </Avatar>
                   ) : (
                     <FcGoogle className="h-5 w-5" />
                   )}
-                  <LogOut className="h-5 w-5" />
                   Sign Out
+                  <LogOut className="h-4 w-4" />
                 </Link>
               </div>
 
