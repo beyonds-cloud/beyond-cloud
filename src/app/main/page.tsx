@@ -12,4 +12,4 @@ export default async function MainPage() {
   }
 
   return <Main user={session.user} mapsKey={env.NEXT_PUBLIC_MAPS_KEY} />;
-} 
+}
