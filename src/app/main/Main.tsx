@@ -115,7 +115,7 @@ export default function Main({
       // Disable the default Street View control (pegman) so it won't auto-trigger.
       const mapOptions: google.maps.MapOptions = {
         center: defaultCenter,
-        zoom: 13,
+        zoom: 10,
         streetViewControl: false,
         styles: [
           {
@@ -131,12 +131,12 @@ export default function Main({
           {
             featureType: "water",
             elementType: "geometry",
-            stylers: [{ color: "#0e1626" }],
+            stylers: [{ color: "#0e1656" }],
           },
           {
             featureType: "landscape",
             elementType: "geometry",
-            stylers: [{ color: "#1e303d" }],
+            stylers: [{ color: "#1e403d" }],
           },
         ],
       };
@@ -156,11 +156,11 @@ export default function Main({
           motionTrackingControl: false,
           addressControl: false,
           fullscreenControl: false,
-          linksControl: true,
-          clickToGo: false,
+          linksControl: false,
+          clickToGo: true,
           panControl: true,
           zoomControl: true,
-          showRoadLabels: false,
+          showRoadLabels: true,
           disableDefaultUI: false,
         },
       );
