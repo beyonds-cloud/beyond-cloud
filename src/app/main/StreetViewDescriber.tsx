@@ -266,7 +266,7 @@ export default function StreetViewDescriber({
   };
 
   return (
-    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={true} onOpenChange={(open: boolean) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] max-w-6xl overflow-auto bg-gray-800 text-white">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white">
@@ -287,7 +287,7 @@ export default function StreetViewDescriber({
                 </Label>
                 <Select
                   value={selectedPromptStyle}
-                  onValueChange={(value) => setSelectedPromptStyle(value)}
+                  onValueChange={(value: string) => setSelectedPromptStyle(value)}
                 >
                   <SelectTrigger id="promptStyle" className="w-full rounded-md border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white">
                     <SelectValue placeholder="Select a twist" />
@@ -303,17 +303,23 @@ export default function StreetViewDescriber({
               </div>
 
               <div>
-                <Label htmlFor="customPrompt" className="text-sm font-medium text-gray-300">
+                <label htmlFor="customPrompt" className="block text-sm font-medium text-gray-300 text-left mb-1">
                   Custom Twist (optional)
-                </Label>
-                <Input
-                  id="customPrompt"
-                  type="text"
-                  value={customPromptAddition}
-                  onChange={(e) => setCustomPromptAddition(e.target.value)}
-                  placeholder="Now, the twist:..."
-                  className="w-full rounded-md border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white"
-                />
+                </label>
+                <div className="relative">
+                  <input
+                    id="customPrompt"
+                    type="text"
+                    value={customPromptAddition}
+                    onChange={(e) => setCustomPromptAddition(e.target.value)}
+                    placeholder="Now, the twist:..."
+                    maxLength={512}
+                    className="w-full rounded-md border-gray-600 bg-gray-700 text-white px-3 py-2 text-sm pr-24"
+                  />
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                    {512 - customPromptAddition.length} chars left
+                  </span>
+                </div>
               </div>
             </div>
 
