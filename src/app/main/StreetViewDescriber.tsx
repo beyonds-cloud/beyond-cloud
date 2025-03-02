@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Wand2, Camera } from "lucide-react";
+import { Loader2, Wand2, Camera, Download } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -266,7 +266,7 @@ export default function StreetViewDescriber({
   };
 
   return (
-    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+    <Dialog open={true} onOpenChange={(open: boolean) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] max-w-6xl overflow-auto bg-gray-800 text-white">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white">
@@ -287,7 +287,7 @@ export default function StreetViewDescriber({
                 </Label>
                 <Select
                   value={selectedPromptStyle}
-                  onValueChange={(value) => setSelectedPromptStyle(value)}
+                  onValueChange={(value: string) => setSelectedPromptStyle(value)}
                 >
                   <SelectTrigger id="promptStyle" className="w-full rounded-md border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white">
                     <SelectValue placeholder="Select a twist" />
@@ -303,17 +303,23 @@ export default function StreetViewDescriber({
               </div>
 
               <div>
-                <Label htmlFor="customPrompt" className="text-sm font-medium text-gray-300">
+                <Label htmlFor="customPrompt" className="block text-sm font-medium text-gray-300 text-left mb-1">
                   Custom Twist (optional)
                 </Label>
-                <Input
-                  id="customPrompt"
-                  type="text"
-                  value={customPromptAddition}
-                  onChange={(e) => setCustomPromptAddition(e.target.value)}
-                  placeholder="Now, the twist:..."
-                  className="w-full rounded-md border-gray-600 bg-gray-700 px-3 py-2 text-sm text-white"
-                />
+                <div className="relative">
+                  <Input
+                    id="customPrompt"
+                    type="text"
+                    value={customPromptAddition}
+                    onChange={(e) => setCustomPromptAddition(e.target.value)}
+                    placeholder="Now, the twist:..."
+                    maxLength={512}
+                    className="w-full rounded-md border-gray-600 bg-gray-700 text-white px-3 py-2 text-sm pr-24"
+                  />
+                  <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400">
+                    {512 - customPromptAddition.length} chars left
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -414,6 +420,20 @@ export default function StreetViewDescriber({
                     sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
+                <Button
+                  onClick={() => {
+                    const link = document.createElement('a');
+                    link.href = imageUrl || '';
+                    link.download = 'street-view.jpg';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                  }}
+                  className="mt-2 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+                >
+                  <Download className="h-4 w-4" />
+                  Download Street View
+                </Button>
               </div>
 
               {generatedImageUrl && (
@@ -430,6 +450,20 @@ export default function StreetViewDescriber({
                       sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
+                  <Button
+                    onClick={() => {
+                      const link = document.createElement('a');
+                      link.href = generatedImageUrl || '';
+                      link.download = 'ai-generated-image.jpg';
+                      document.body.appendChild(link);
+                      link.click();
+                      document.body.removeChild(link);
+                    }}
+                    className="mt-2 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download AI Generated Image
+                  </Button>
                 </div>
               )}
             </div>
