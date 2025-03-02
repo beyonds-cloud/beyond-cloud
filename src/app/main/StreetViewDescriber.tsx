@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Wand2, Camera, Download } from "lucide-react";
+import { Loader2, Wand2, Camera, Download, X } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -20,6 +20,7 @@ import {
   DialogFooter,
   DialogClose,
 } from "@/components/ui/dialog";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface StreetViewDescriberProps {
   latitude: number | null;
@@ -91,6 +92,45 @@ const PROMPT_TWISTS = [
   },
 ];
 
+interface ImageLightboxProps {
+  src: string;
+  alt: string;
+  onClose: () => void;
+}
+
+function ImageLightbox({ src, alt, onClose }: ImageLightboxProps) {
+  return (
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <AnimatePresence>
+        {true && (
+          <DialogContent
+            className="max-w-[95vw] max-h-[95vh] p-0 border-none bg-transparent cursor-pointer"
+            onClick={onClose}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+              className="h-[90vh] w-[95vw]"
+            >
+              <DialogTitle className="sr-only">Image Preview</DialogTitle>
+              <Image
+                src={src}
+                alt={alt}
+                fill
+                className="object-contain"
+                sizes="95vw"
+                priority
+              />
+            </motion.div>
+          </DialogContent>
+        )}
+      </AnimatePresence>
+    </Dialog>
+  );
+}
+
 export default function StreetViewDescriber({
   latitude,
   longitude,
@@ -107,12 +147,8 @@ export default function StreetViewDescriber({
 
   // States for generated image
   const [generatedImageLoading, setGeneratedImageLoading] = useState(false);
-  const [generatedImageError, setGeneratedImageError] = useState<string | null>(
-    null,
-  );
-  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(
-    null,
-  );
+  const [generatedImageError, setGeneratedImageError] = useState<string | null>(null);
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
 
   // Combined loading state
   const [combinedLoading, setCombinedLoading] = useState(false);
@@ -120,6 +156,9 @@ export default function StreetViewDescriber({
   // New states for prompt customization
   const [selectedPromptStyle, setSelectedPromptStyle] = useState("");
   const [customPromptAddition, setCustomPromptAddition] = useState("");
+
+  // Lightbox states
+  const [lightboxImage, setLightboxImage] = useState<{ src: string; alt: string } | null>(null);
 
   const getDescription = async () => {
     if (!latitude || !longitude) {
@@ -411,7 +450,10 @@ export default function StreetViewDescriber({
                 <h3 className="mb-2 text-xl font-semibold text-white">
                   Street View
                 </h3>
-                <div className="relative w-full overflow-hidden rounded-lg border-2 border-blue-500 pt-[56.25%]">
+                <div 
+                  className="relative w-full overflow-hidden rounded-lg border-2 border-blue-500 pt-[56.25%] cursor-pointer hover:opacity-90 transition-opacity"
+                  onClick={() => setLightboxImage({ src: imageUrl, alt: "Street View" })}
+                >
                   <Image
                     src={imageUrl}
                     alt="Street View"
@@ -441,7 +483,10 @@ export default function StreetViewDescriber({
                   <h3 className="mb-2 text-xl font-semibold text-white">
                     AI Generated Image
                   </h3>
-                  <div className="relative w-full overflow-hidden rounded-lg border-2 border-purple-500 pt-[56.25%]">
+                  <div 
+                    className="relative w-full overflow-hidden rounded-lg border-2 border-purple-500 pt-[56.25%] cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => setLightboxImage({ src: generatedImageUrl, alt: "AI Generated Scene" })}
+                  >
                     <Image
                       src={generatedImageUrl}
                       alt="AI Generated Scene"
@@ -467,6 +512,14 @@ export default function StreetViewDescriber({
                 </div>
               )}
             </div>
+
+            {lightboxImage && (
+              <ImageLightbox
+                src={lightboxImage.src}
+                alt={lightboxImage.alt}
+                onClose={() => setLightboxImage(null)}
+              />
+            )}
           </>
         )}
       </DialogContent>
