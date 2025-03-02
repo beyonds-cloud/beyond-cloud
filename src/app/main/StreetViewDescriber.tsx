@@ -61,16 +61,6 @@ const PROMPT_TWISTS = [
   { value: "none", label: "None" },
   {
     value:
-      "now, the twist: the scene is in the style of the future, incorporate futuristic elements into each part of the scene",
-    label: "Futuristic",
-  },
-  {
-    value:
-      "now, the twist: the scene is in the style of the past, incorporate historical elements into each part of the scene",
-    label: "Historical",
-  },
-  {
-    value:
       "now, the twist: the scene is in the style of post-apocalyptic world, incorporate post-apocalyptic elements into each part of the scene",
     label: "Post-Apocalyptic",
   },
@@ -88,6 +78,26 @@ const PROMPT_TWISTS = [
     value:
       "now, the twist: the scene is in the style of steampunk, incorporate steampunk elements into each part of the scene",
     label: "Steampunk",
+  },
+  {
+    value:
+      "now, the twist: the scene is in the style of MINECRAFT, incorporate minecraft elements into each part of the scene",
+    label: "Cube Based Video Game",
+  },
+  {
+    value:
+      "now, the twist: the scene is in the style of Garry's Mod, incorporate Garry's Mod elements into each part of the scene, be sure to make it look like the source engine",
+    label: "A Mod made by Garry",
+  },
+  {
+    value:
+      "now, the twist: the scene is upside down, be sure to flip the scene vertically",
+    label: "Upside Down",
+  },
+  {
+    value:
+      "now, the twist: the scene is actually just a soundstage from a movie set, you can see the lights and the cameras and stuff, the scene is still there in the middle of the soundstage",
+    label: "Soundstage",
   },
 ];
 
