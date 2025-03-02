@@ -318,29 +318,29 @@ export default function Main({
                 `}</style>
               </div>
             )}
-            <div className="w-full max-w-4xl p-4">
-              <div className="mb-4 flex items-center justify-between">
-                <h1 className="text-3xl font-bold text-white">
+            <div className="flex h-screen w-full flex-col p-4 sm:p-5 md:max-w-7xl md:mx-auto">
+              <div className="mb-2 sm:mb-3 flex items-center justify-between">
+                <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
                   Street View Explorer
                 </h1>
                 <Link
                   href="/api/auth/signout"
-                  className="flex items-center gap-2 rounded-lg bg-white/10 px-4 py-2 text-white transition-colors duration-200 hover:bg-white/20"
+                  className="flex items-center gap-1 sm:gap-2 rounded-lg bg-white/10 px-2 sm:px-4 py-1 sm:py-2 text-sm sm:text-base text-white transition-colors duration-200 hover:bg-white/20"
                 >
                   {user?.image ? (
-                    <Avatar className="h-8 w-8">
+                    <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
                       <AvatarImage src={user.image} alt={user.name ?? "User"} />
                       <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
                   ) : (
-                    <FcGoogle className="h-5 w-5" />
+                    <FcGoogle className="h-4 w-4 sm:h-5 sm:w-5" />
                   )}
                   Sign Out
-                  <LogOut className="h-4 w-4" />
+                  <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
                 </Link>
               </div>
 
-              <div className="relative h-[70vh] w-full overflow-hidden rounded-xl border-4 border-blue-500 shadow-lg">
+              <div className="relative flex-grow w-full overflow-hidden rounded-xl border-4 border-blue-500 shadow-lg">
                 <div
                   ref={mapElementRef}
                   id="map"
@@ -353,15 +353,15 @@ export default function Main({
                   id="street-view"
                   className={`absolute inset-0 h-full w-full transition-opacity duration-300 ${
                     streetViewActive
-                      ? "pointer-events-auto opacity-100"
+                      ? "pointer-events-auto opacity-100 z-10"
                       : "pointer-events-none opacity-0"
                   }`}
                 ></div>
               </div>
-              <div className="mt-4 flex justify-center space-x-4">
+              <div className="mt-2 sm:mt-3 flex justify-center space-x-2 sm:space-x-4">
                 <Button
                   onClick={exitStreetView}
-                  className={`rounded-lg bg-red-500 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-red-600 ${
+                  className={`rounded-lg bg-red-500 px-2 sm:px-4 py-1 sm:py-2 text-sm sm:text-base font-semibold text-white transition-colors duration-200 hover:bg-red-600 ${
                     streetViewActive
                       ? "opacity-100"
                       : "pointer-events-none opacity-0"
@@ -372,7 +372,7 @@ export default function Main({
 
                 <Button
                   onClick={captureStreetView}
-                  className={`rounded-lg bg-blue-500 px-4 py-2 font-semibold text-white transition-colors duration-200 hover:bg-blue-600 ${
+                  className={`rounded-lg bg-blue-500 px-2 sm:px-4 py-1 sm:py-2 text-sm sm:text-base font-semibold text-white transition-colors duration-200 hover:bg-blue-600 ${
                     streetViewActive
                       ? "opacity-100"
                       : "pointer-events-none opacity-0"
