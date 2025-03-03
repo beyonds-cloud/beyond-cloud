@@ -4,7 +4,7 @@
   <p align="center">
     Explore the world through AI-powered Street View descriptions and image generation.
     <br />
-     <a href="https://github.com/beyonds-cloud/beyond-cloud">github.com/beyonds-cloud/beyond-cloud</a>
+     <a href="https://beyonds.cloud">View the site!</a>
   </p>
   <a href="https://github.com/beyonds-cloud/beyond-cloud">
     <img src="https://github.com/beyonds-cloud/beyond-cloud/blob/main/public/logos/png/icon.png" alt="Logo" width="256" height="256">
