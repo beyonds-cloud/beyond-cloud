@@ -99,6 +99,13 @@ const PROMPT_TWISTS = [
       "now, the twist: the scene is actually just a soundstage from a movie set, you can see the lights and the cameras and stuff, the scene is still there in the middle of the soundstage",
     label: "Soundstage",
   },
+  {
+    value:
+      "now, the twist: the scene is actually colour inverted, so make sure to invert the colours of the scene",
+    label: "Inverted",
+  },
+  
+
 ];
 
 export default function StreetViewDescriber({
