@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Wand2, Camera, Download } from "lucide-react";
+import { Loader2, Wand2, Camera, Download, ArrowRightIcon, ClipboardCopy, Clipboard, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -199,7 +200,7 @@ export default function StreetViewDescriber({
           setDescription("No description available");
           setDebugInfo(
             "Response format didn't contain expected text. Raw response: " +
-              JSON.stringify(data.description, null, 2),
+            JSON.stringify(data.description, null, 2),
           );
           return null;
         }
@@ -275,9 +276,30 @@ export default function StreetViewDescriber({
     }
   };
 
+  const copyDescriptionToClipboard = () => {
+    if (description) {
+      try {
+        navigator.clipboard.writeText(description);
+        toast.success("Copied to clipboard", {
+          description: "Description has been copied to clipboard.",
+          icon: <Clipboard className="h-5 w-5" />,
+        });
+      } catch (err) {
+        console.error('Failed to copy description', err);
+        toast.error(
+        "Failed to copy description to clipboard",
+        {
+          description: "Please try again.",
+          icon: <AlertCircle className="h-5 w-5" />,
+        }
+        )
+      }
+    }
+  };
+
   return (
     <Dialog open={true} onOpenChange={(open: boolean) => !open && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-6xl overflow-auto bg-gray-800 text-white">
+      <DialogContent className="max-h-[90vh] max-w-7xl w-[95vw] overflow-auto bg-gray-800 text-white">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold text-white">
             Street View AI Experience
@@ -416,18 +438,16 @@ export default function StreetViewDescriber({
               </div>
             )}
 
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
-              <div className="flex flex-col">
-                <h3 className="mb-2 text-xl font-semibold text-white">
+            <div className="flex items-center justify-between space-x-6">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold mb-3 text-white">
                   Street View
                 </h3>
-                <div className="relative w-full overflow-hidden rounded-lg border-2 border-blue-500 pt-[56.25%]">
-                  <Image
+                <div className="relative w-full aspect-video rounded-lg border-2 border-blue-500 overflow-hidden">
+                  <img
                     src={imageUrl}
                     alt="Street View"
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="w-full h-full object-cover"
                   />
                 </div>
                 <Button
@@ -439,25 +459,39 @@ export default function StreetViewDescriber({
                     link.click();
                     document.body.removeChild(link);
                   }}
-                  className="mt-2 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700"
+                  className="mt-3 w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
-                  <Download className="h-4 w-4" />
+                  <Download className="mr-2 h-4 w-4" />
                   Download Street View
                 </Button>
               </div>
 
+              <div className="flex items-center justify-center">
+                <div className="flex items-center">
+                  <div className="w-16 h-0.5 bg-gray-700 mr-2"></div>
+                  <div
+                    className="bg-gray-800 p-3 rounded-full hover:bg-gray-700 transition-colors cursor-pointer"
+                    onClick={copyDescriptionToClipboard}
+                    title={description}
+                  >
+                    <Clipboard className="h-6 w-6 text-gray-400 hover:text-white" />
+                  </div>
+                  <div className="w-16 h-0.5 bg-gray-700 ml-2 relative">
+                    <ArrowRightIcon className="absolute top-1/2 -translate-y-1/2 translate-x-1/2 right-0 h-4 w-4 text-gray-700" />
+                  </div>
+                </div>
+              </div>
+
               {generatedImageUrl && (
-                <div className="flex flex-col">
-                  <h3 className="mb-2 text-xl font-semibold text-white">
+                <div className="flex-1">
+                  <h3 className="text-lg font-semibold mb-3 text-white">
                     AI Generated Image
                   </h3>
-                  <div className="relative w-full overflow-hidden rounded-lg border-2 border-purple-500 pt-[56.25%]">
-                    <Image
+                  <div className="relative w-full aspect-video rounded-lg border-2 border-purple-500 overflow-hidden">
+                    <img
                       src={generatedImageUrl}
                       alt="AI Generated Scene"
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="w-full h-full object-cover"
                     />
                   </div>
                   <Button
@@ -469,9 +503,9 @@ export default function StreetViewDescriber({
                       link.click();
                       document.body.removeChild(link);
                     }}
-                    className="mt-2 flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700"
+                    className="mt-3 w-full bg-purple-600 hover:bg-purple-700 text-white"
                   >
-                    <Download className="h-4 w-4" />
+                    <Download className="mr-2 h-4 w-4" />
                     Download AI Generated Image
                   </Button>
                 </div>
