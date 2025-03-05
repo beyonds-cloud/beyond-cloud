@@ -444,7 +444,7 @@ export default function StreetViewDescriber({
                   Street View
                 </h3>
                 <div className="relative w-full aspect-video rounded-lg border-2 border-blue-500 overflow-hidden">
-                  <img
+                  <Image
                     src={imageUrl}
                     alt="Street View"
                     className="w-full h-full object-cover"
@@ -488,7 +488,7 @@ export default function StreetViewDescriber({
                     AI Generated Image
                   </h3>
                   <div className="relative w-full aspect-video rounded-lg border-2 border-purple-500 overflow-hidden">
-                    <img
+                    <Image
                       src={generatedImageUrl}
                       alt="AI Generated Scene"
                       className="w-full h-full object-cover"
