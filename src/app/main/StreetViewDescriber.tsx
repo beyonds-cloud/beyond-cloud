@@ -448,6 +448,8 @@ export default function StreetViewDescriber({
                     src={imageUrl}
                     alt="Street View"
                     className="w-full h-full object-cover"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
                   />
                 </div>
                 <Button
@@ -492,6 +494,8 @@ export default function StreetViewDescriber({
                       src={generatedImageUrl}
                       alt="AI Generated Scene"
                       className="w-full h-full object-cover"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 50vw"
                     />
                   </div>
                   <Button
