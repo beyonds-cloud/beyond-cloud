@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Loader2, Wand2, Camera, Download, ArrowRightIcon, ClipboardCopy, Clipboard, AlertCircle } from "lucide-react";
+import { Loader2, Wand2, Camera, Download, ArrowRightIcon, Clipboard, AlertCircle } from "lucide-react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,8 +18,6 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-  DialogClose,
 } from "@/components/ui/dialog";
 
 interface StreetViewDescriberProps {
@@ -285,22 +283,23 @@ export default function StreetViewDescriber({
 
   const copyDescriptionToClipboard = () => {
     if (description) {
-      try {
-        navigator.clipboard.writeText(description);
-        toast.success("Copied to clipboard", {
-          description: "Description has been copied to clipboard.",
-          icon: <Clipboard className="h-5 w-5" />,
+      navigator.clipboard.writeText(description)
+        .then(() => {
+          toast.success("Copied to clipboard", {
+            description: "Description has been copied to clipboard.",
+            icon: <Clipboard className="h-5 w-5" />,
+          });
+        })
+        .catch((err) => {
+          console.error('Failed to copy description', err);
+          toast.error(
+          "Failed to copy description to clipboard",
+          {
+            description: "Please try again.",
+            icon: <AlertCircle className="h-5 w-5" />,
+          }
+          )
         });
-      } catch (err) {
-        console.error('Failed to copy description', err);
-        toast.error(
-        "Failed to copy description to clipboard",
-        {
-          description: "Please try again.",
-          icon: <AlertCircle className="h-5 w-5" />,
-        }
-        )
-      }
     }
   };
 
