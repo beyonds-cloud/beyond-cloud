@@ -47,16 +47,15 @@ export async function POST(request: NextRequest) {
       const now = new Date();
       const timeDiff = now.getTime() - lastRequest.getTime();
       const secondsDiff = Math.floor(timeDiff / 1000);
-      const timeout = user.isPro ? 10 : 600; // 600 seconds = 10 minutes
 
-      if (secondsDiff < timeout) {
-        return NextResponse.json(
-          {
-            error: `Please wait ${timeout - secondsDiff} seconds before making another request`,
-          },
-          { status: 429 },
-        );
-      }
+      // if (secondsDiff < timeout) {
+      //   return NextResponse.json(
+      //     {
+      //       error: `Please wait ${timeout - secondsDiff} seconds before making another request`,
+      //     },
+      //     { status: 429 },
+      //   );
+      // }
     }
 
     const { description } = (await request.json()) as RequestParams;
