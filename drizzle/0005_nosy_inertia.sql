@@ -1,0 +1,1 @@
+ALTER TABLE "beyond-cloud_user" ADD COLUMN "generation_requests" integer DEFAULT 0;

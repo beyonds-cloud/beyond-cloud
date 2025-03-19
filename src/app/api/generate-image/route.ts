@@ -47,15 +47,13 @@ export async function POST(request: NextRequest) {
       const now = new Date();
       const timeDiff = now.getTime() - lastRequest.getTime();
       const secondsDiff = Math.floor(timeDiff / 1000);
-      const timeout = user.isPro ? 10 : 600; // 600 seconds = 10 minutes
 
-      if (secondsDiff < timeout) {
-        return NextResponse.json(
-          {
-            error: `Please wait ${timeout - secondsDiff} seconds before making another request`,
-          },
-          { status: 429 },
-        );
+      // Reset generation requests if last request was more than 24 hours ago
+      if (secondsDiff > 86400) {
+        await db
+          .update(users)
+          .set({ generationRequests: 0 })
+          .where(eq(users.id, session.user.id));
       }
     }
 
@@ -65,6 +63,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         { error: "Missing description" },
         { status: 400 },
+      );
+    }
+
+    // Check user generation limits
+    const userType = user?.userType;
+    const generationRequests = user?.generationRequests ?? 0;
+
+    if (userType === "basic" && generationRequests >= 5) {
+      return NextResponse.json(
+        { error: "Generation limit reached for basic users" },
+        { status: 403 },
+      );
+    } else if (userType === "pro" && generationRequests >= 20) {
+      return NextResponse.json(
+        { error: "Generation limit reached for pro users" },
+        { status: 403 },
       );
     }
 
@@ -136,6 +150,13 @@ export async function POST(request: NextRequest) {
     ) {
       const generatedImage = generatedResponse.predictions[0];
       const enhancedPrompt = generatedImage.prompt ?? description;
+
+      // increment user.generation_requests
+      await db
+        .update(users)
+        .set({ generationRequests: sql`${users.generationRequests} + 1` })
+        .where(eq(users.id, session.user.id));
+
       return NextResponse.json({
         image: `data:${generatedImage.mimeType};base64,${generatedImage.bytesBase64Encoded}`,
         enhancedPrompt,
