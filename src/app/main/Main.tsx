@@ -10,6 +10,9 @@ import { Button } from "@/components/ui/button";
 import { Toaster } from "@/components/ui/sonner";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { db } from "@/server/db";
+import { users } from "@/server/db/schema";
+import { eq } from "drizzle-orm";
 
 declare global {
   interface Window {
@@ -22,6 +25,9 @@ type User = {
   name?: string | null;
   email?: string | null;
   image?: string | null;
+  isPro?: boolean;
+  last_image_request?: string | null;
+  id?: string | null;
 };
 
 export default function Main({

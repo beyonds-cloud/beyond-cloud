@@ -53,6 +53,8 @@ export const users = createTable("user", {
   }).default(sql`CURRENT_TIMESTAMP`),
   image: varchar("image", { length: 255 }),
   lastImageRequest: timestamp("last_image_request").default(sql`NULL`),
+  userType: varchar("user_type", {length: 255}).default("basic"),
+  generationRequests: integer("generation_requests").default(0),     
 });
 
 export const usersRelations = relations(users, ({ many }) => ({

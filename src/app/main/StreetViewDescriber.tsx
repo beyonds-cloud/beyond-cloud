@@ -24,7 +24,7 @@ interface StreetViewDescriberProps {
   latitude: number | null;
   longitude: number | null;
   heading: number;
-  pitch: number;
+  pitch: number;   
   onClose: () => void;
 }
 
