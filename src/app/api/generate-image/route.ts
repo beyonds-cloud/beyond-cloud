@@ -48,7 +48,6 @@ export async function POST(request: NextRequest) {
       const timeDiff = now.getTime() - lastRequest.getTime();
       const secondsDiff = Math.floor(timeDiff / 1000);
 
-      // Reset generation requests if last request was more than 24 hours ago
       if (secondsDiff > 86400) {
         await db
           .update(users)

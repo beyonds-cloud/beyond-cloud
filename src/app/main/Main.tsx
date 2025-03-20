@@ -287,7 +287,7 @@ export default function Main({
           </div>
         ) : (
           <>
-            {user?.isPro && (
+            {/* {user?.isPro && (
               <div className="group fixed bottom-4 left-4 z-50 rounded-lg bg-white/50 px-3 py-1 text-sm font-bold backdrop-blur-sm transition-all duration-300 hover:rotate-[-5deg] hover:scale-110 hover:bg-white/60 hover:shadow-[0_0_20px_rgba(255,255,255,0.7)]">
                 <span className="inline-block animate-[wiggle_2s_ease-in-out_infinite] group-hover:animate-[bounce_0.5s_ease-in-out_infinite]">
                   P
@@ -322,7 +322,7 @@ export default function Main({
                   }
                 `}</style>
               </div>
-            )}
+            )} */}
             <div className="flex h-screen w-full flex-col p-4 sm:p-5 md:max-w-7xl md:mx-auto">
               <div className="mb-2 sm:mb-3 flex items-center justify-between">
                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
@@ -356,7 +356,7 @@ export default function Main({
                 <div
                   ref={streetViewElementRef}
                   id="street-view"
-                  className={`absolute inset-0 h-full w-full transition-opacity duration-300 ${
+                  className={`absolute inset-0 h-full w-full transition-opacity duration-300 ${  
                     streetViewActive
                       ? "pointer-events-auto opacity-100 z-10"
                       : "pointer-events-none opacity-0"
