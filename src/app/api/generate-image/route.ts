@@ -69,14 +69,9 @@ export async function POST(request: NextRequest) {
     const userType = user?.userType;
     const generationRequests = user?.generationRequests ?? 0;
 
-    if (userType === "basic" && generationRequests >= 5) {
+    if (userType === "basic" && generationRequests >= 15) {
       return NextResponse.json(
-        { error: "Generation limit reached for basic users" },
-        { status: 403 },
-      );
-    } else if (userType === "pro" && generationRequests >= 20) {
-      return NextResponse.json(
-        { error: "Generation limit reached for pro users" },
+        { error: "Daily generation limit reached" },
         { status: 403 },
       );
     }
