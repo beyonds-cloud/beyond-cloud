@@ -528,11 +528,11 @@ class App {
         },
         {
             image: `./gallery-images/4.png`,
-            text: "Sydeney Opera House",
+            text: "Sydney Opera House",
         },
         {
             image: `./gallery-images/5.png`,
-            text: "Wahington Monument",
+            text: "Washington Monument",
         },
         {
             image: `./gallery-images/6.png`,
