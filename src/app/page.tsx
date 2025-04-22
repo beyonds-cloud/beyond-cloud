@@ -10,7 +10,6 @@ import {
   FaBrain,
   FaDiscord,
 } from "react-icons/fa";
-import CircularGallery from "@/components/ui/gallery";
 import { auth } from "@/server/auth";
 import { HydrateClient } from "@/trpc/server";
 import GallerySwitcherClient from "@/components/ui/gallery-switcher-client";
