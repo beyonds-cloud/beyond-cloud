@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import dynamic from "next/dynamic";
 import {
   FaMagic,
   FaMapMarkerAlt,
@@ -12,6 +13,7 @@ import {
 import CircularGallery from "@/components/ui/gallery";
 import { auth } from "@/server/auth";
 import { HydrateClient } from "@/trpc/server";
+import GallerySwitcherClient from "@/components/ui/gallery-switcher-client";
 
 const Index = async () => {
   const session = await auth();
@@ -49,7 +51,7 @@ const Index = async () => {
         </div>
 
         <div className="w-full px-32 mb-12" style={{ height: '600px', position: 'relative' }}>
-          <CircularGallery bend={3} textColor="#ffffff" borderRadius={0.05} />
+          <GallerySwitcherClient />
         </div>
 
         <div className="container mx-auto px-4 py-8">

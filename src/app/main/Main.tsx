@@ -278,36 +278,36 @@ export default function Main({
         />
       )}
   
-      <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-green-700 to-blue-600 relative">
+      <main className="flex min-h-screen items-center justify-center bg-gradient-to-b from-[#1A1F2C] to-[#0D1117] relative">
         {!isMapReady ? (
           <div className="flex items-center justify-center">
-            <Loader2 className="h-12 w-12 animate-spin text-blue-500" />
-            <span className="ml-2 text-xl text-white">Loading Map...</span>
+            <Loader2 className="h-12 w-12 animate-spin text-[#4BDC97]" />
+            <span className="ml-2 text-xl text-white font-medium">Loading Map...</span>
           </div>
         ) : (
-          <div className="flex h-screen w-full flex-col p-4 sm:p-5 md:max-w-7xl md:mx-auto">
-            <div className="mb-2 sm:mb-3 flex items-center justify-between">
-              <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-white">
+          <div className="flex h-screen w-full flex-col p-4 sm:p-6 md:max-w-6xl md:mx-auto">
+            <div className="mb-4 sm:mb-6 flex items-center justify-between">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white drop-shadow-lg">
                 Street View Explorer
               </h1>
               <Link
                 href="/api/auth/signout"
-                className="flex items-center gap-1 sm:gap-2 rounded-lg bg-white/10 px-2 sm:px-4 py-1 sm:py-2 text-sm sm:text-base text-white transition-colors duration-200 hover:bg-white/20"
+                className="flex items-center gap-2 rounded-full bg-white/10 px-3 sm:px-5 py-2 sm:py-3 text-sm sm:text-base text-white font-semibold transition-transform transform hover:scale-105 hover:bg-white/20"
               >
                 {user?.image ? (
-                  <Avatar className="h-6 w-6 sm:h-8 sm:w-8">
+                  <Avatar className="h-8 w-8 sm:h-10 sm:w-10">
                     <AvatarImage src={user.image} alt={user.name ?? "User"} />
                     <AvatarFallback>CN</AvatarFallback>
                   </Avatar>
                 ) : (
-                  <FcGoogle className="h-4 w-4 sm:h-5 sm:w-5" />
+                  <FcGoogle className="h-5 w-5 sm:h-6 sm:w-6" />
                 )}
                 Sign Out
-                <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
+                <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
               </Link>
             </div>
-  
-            <div className="relative flex-grow w-full overflow-hidden rounded-xl border-4 border-blue-500 shadow-lg">
+
+            <div className="relative flex-grow w-full overflow-hidden rounded-2xl border border-[#2D3748]/30 shadow-2xl">
               <div
                 ref={mapElementRef}
                 id="map"
@@ -325,34 +325,34 @@ export default function Main({
                 }`}
               ></div>
             </div>
-  
-            <div className="mt-2 sm:mt-3 flex justify-center space-x-2 sm:space-x-4">
+
+            <div className="mt-4 sm:mt-6 flex justify-center space-x-3 sm:space-x-5">
               <Button
                 onClick={exitStreetView}
-                className={`rounded-lg bg-red-500 px-2 sm:px-4 py-1 sm:py-2 text-sm sm:text-base font-semibold text-white transition-colors duration-200 hover:bg-red-600 ${
+                className={`rounded-full bg-red-600 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold text-white shadow-lg transition-transform transform hover:scale-105 hover:bg-red-700 ${
                   streetViewActive ? "opacity-100" : "pointer-events-none opacity-0"
                 }`}
               >
                 Exit Street View
               </Button>
-  
+
               <Button
                 onClick={captureStreetView}
-                className={`rounded-lg bg-blue-500 px-2 sm:px-4 py-1 sm:py-2 text-sm sm:text-base font-semibold text-white transition-colors duration-200 hover:bg-blue-600 ${
+                className={`rounded-full bg-blue-600 px-4 sm:px-6 py-2 sm:py-3 text-sm sm:text-base font-semibold text-white shadow-lg transition-transform transform hover:scale-105 hover:bg-blue-700 ${
                   streetViewActive ? "opacity-100" : "pointer-events-none opacity-0"
                 }`}
               >
                 Choose This View
               </Button>
-            </div> 
+            </div>
           </div>
         )}
-  
+
         {/* Help with Cloud Bill Link */}
-        <div className="absolute bottom-4 left-4">
+        <div className="absolute bottom-6 left-6">
           <Button
             asChild
-            className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 via-purple-500 to-indigo-500 px-5 py-3 rounded-full shadow-xl hover:from-blue-600 hover:via-purple-600 hover:to-indigo-600 transition-transform transform hover:scale-105"
+            className="flex items-center space-x-3 bg-gradient-to-r from-[#29A7D9] to-[#4BDC97] px-6 py-3 rounded-full shadow-2xl hover:from-[#29A7D9]/80 hover:to-[#4BDC97]/80 transition-transform transform hover:scale-110"
           >
             <a
               href="https://buymeacoffee.com/beyondscloud"
