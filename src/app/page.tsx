@@ -50,7 +50,7 @@ const Index = async () => {
           </div>
         </div>
 
-        <div className="w-full px-32 mb-12" style={{ height: '600px', position: 'relative' }}>
+        <div className="w-full px-32 -mt-8 mb-12" style={{ height: '600px', position: 'relative' }}>
           <GallerySwitcherClient />
         </div>
 
@@ -98,7 +98,7 @@ const FeatureCard = ({
   description: string;
 }) => (
   <div className="rounded-xl border border-[#2D3748]/30 bg-[#1E2530]/50 p-6 backdrop-blur-sm transition-all duration-300 hover:bg-[#1E2530]/70">
-    <div className="mb-4 flex items-center justify-center text-3xl">
+    <div className="mb-12 flex items-center justify-center text-3xl">
       {icon ?? <span className="text-sm text-red-500">Missing icon</span>}
     </div>
     <h3 className="mb-2 text-xl font-semibold text-white">{title}</h3>

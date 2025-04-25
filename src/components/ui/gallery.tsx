@@ -345,17 +345,17 @@ class Media {
     this.plane.position.x = this.x - scroll.current - this.extra;
 
     const x = this.plane.position.x;
-    const H = this.viewport.width / 2;
+    const fixedH = 30;
 
     if (this.bend === 0) {
       this.plane.position.y = 0;
       this.plane.rotation.z = 0;
     } else {
       const B_abs = Math.abs(this.bend);
-      const R = (H * H + B_abs * B_abs) / (2 * B_abs);
-      const effectiveX = Math.min(Math.abs(x), H);
+      const R = (fixedH * fixedH + B_abs * B_abs) / (2 * B_abs);
+      const effectiveX = Math.min(Math.abs(x), fixedH);
 
-      const arc = R - Math.sqrt(R * R - effectiveX * effectiveX);
+      const arc = R - Math.sqrt(Math.max(0, R * R - effectiveX * effectiveX));
       if (this.bend > 0) {
         this.plane.position.y = -arc;
         this.plane.rotation.z = -Math.sign(x) * Math.asin(effectiveX / R);
@@ -378,7 +378,7 @@ class Media {
     const distanceFromCenter = Math.abs(this.plane.position.x);
     const blurThreshold = this.viewport.width / 1;
     const blurAmount = Math.min(distanceFromCenter / blurThreshold, 1);
-    this.program.uniforms.uBlur.value = blurAmount; 
+    this.program.uniforms.uBlur.value = blurAmount;
 
     if (direction === "right" && this.isBefore) {
       this.extra -= this.widthTotal;
@@ -450,7 +450,7 @@ class App {
   raf: number = 0;
 
   boundOnResize!: () => void;
-  boundOnWheel!: () => void;
+  boundOnWheel!: (e: WheelEvent) => void;
   boundOnTouchDown!: (e: MouseEvent | TouchEvent) => void;
   boundOnTouchMove!: (e: MouseEvent | TouchEvent) => void;
   boundOnTouchUp!: () => void;
@@ -528,11 +528,11 @@ class App {
         },
         {
             image: `./gallery-images/4.png`,
-            text: "Sydeney Opera House",
+            text: "Sydney Opera House",
         },
         {
             image: `./gallery-images/5.png`,
-            text: "Wahington Monument",
+            text: "Washington Monument",
         },
         {
             image: `./gallery-images/6.png`,
@@ -591,8 +591,13 @@ class App {
     this.onCheck();
   }
 
-  onWheel() {
-    this.scroll.target += 2;
+  onWheel(e: WheelEvent) {
+    const scrollAmount = 2;
+    if (e.deltaY > 0) {
+      this.scroll.target += scrollAmount;
+    } else if (e.deltaY < 0) {
+      this.scroll.target -= scrollAmount;
+    }
     this.onCheckDebounce();
   }
 
@@ -646,27 +651,25 @@ class App {
     this.boundOnTouchMove = this.onTouchMove.bind(this);
     this.boundOnTouchUp = this.onTouchUp.bind(this);
     window.addEventListener("resize", this.boundOnResize);
-    window.addEventListener("mousewheel", this.boundOnWheel);
     window.addEventListener("wheel", this.boundOnWheel);
-    window.addEventListener("mousedown", this.boundOnTouchDown);
-    window.addEventListener("mousemove", this.boundOnTouchMove);
-    window.addEventListener("mouseup", this.boundOnTouchUp);
-    window.addEventListener("touchstart", this.boundOnTouchDown);
-    window.addEventListener("touchmove", this.boundOnTouchMove);
-    window.addEventListener("touchend", this.boundOnTouchUp);
+    this.container.addEventListener("mousedown", this.boundOnTouchDown);
+    this.container.addEventListener("mousemove", this.boundOnTouchMove);
+    this.container.addEventListener("mouseup", this.boundOnTouchUp);
+    this.container.addEventListener("touchstart", this.boundOnTouchDown);
+    this.container.addEventListener("touchmove", this.boundOnTouchMove);
+    this.container.addEventListener("touchend", this.boundOnTouchUp);
   }
 
   destroy() {
     window.cancelAnimationFrame(this.raf);
     window.removeEventListener("resize", this.boundOnResize);
-    window.removeEventListener("mousewheel", this.boundOnWheel);
     window.removeEventListener("wheel", this.boundOnWheel);
-    window.removeEventListener("mousedown", this.boundOnTouchDown);
-    window.removeEventListener("mousemove", this.boundOnTouchMove);
-    window.removeEventListener("mouseup", this.boundOnTouchUp);
-    window.removeEventListener("touchstart", this.boundOnTouchDown);
-    window.removeEventListener("touchmove", this.boundOnTouchMove);
-    window.removeEventListener("touchend", this.boundOnTouchUp);
+    this.container.removeEventListener("mousedown", this.boundOnTouchDown);
+    this.container.removeEventListener("mousemove", this.boundOnTouchMove);
+    this.container.removeEventListener("mouseup", this.boundOnTouchUp);
+    this.container.removeEventListener("touchstart", this.boundOnTouchDown);
+    this.container.removeEventListener("touchmove", this.boundOnTouchMove);
+    this.container.removeEventListener("touchend", this.boundOnTouchUp);
     if (
       this.renderer &&
       this.renderer.gl &&
