@@ -10,10 +10,9 @@ import {
   FaBrain,
   FaDiscord,
 } from "react-icons/fa";
-import CircularGallery from "@/components/ui/gallery";
 import { auth } from "@/server/auth";
 import { HydrateClient } from "@/trpc/server";
-import GallerySwitcherClient from "@/components/ui/gallery-switcher-client";
+import CarouselWrapper from '@/components/ui/carousel-wrapper-client';
 
 const Index = async () => {
   const session = await auth();
@@ -21,6 +20,49 @@ const Index = async () => {
   if (session?.user) {
     redirect("/main");
   }
+
+  const imagePaths = [
+    "/images/1.png",
+    "/images/2.png",
+    "/images/3.png",
+    "/images/4.png",
+    "/images/5.png",
+    "/images/6.png",
+    "/images/7.png",
+    "/images/8.png",
+    "/images/9.png",
+  ];
+
+  const imageLocations = [
+    "Christ the Redeemer",
+    "Inside the Kremlin",
+    "The Great Pyramid of Giza",
+    "Sydney Opera House",
+    "Washington Monument",
+    "Carleton University",
+    "Canada Parliament",
+    "Niagara Falls",
+    "Golden Gate Bridge",
+  ];
+
+  const responsive = {
+    superLargeDesktop: {
+      breakpoint: { max: 4000, min: 3000 },
+      items: 5,
+    },
+    desktop: {
+      breakpoint: { max: 3000, min: 1024 },
+      items: 3,
+    },
+    tablet: {
+      breakpoint: { max: 1024, min: 464 },
+      items: 2,
+    },
+    mobile: {
+      breakpoint: { max: 464, min: 0 },
+      items: 1,
+    },
+  };
 
   return (
     <HydrateClient>
@@ -39,7 +81,7 @@ const Index = async () => {
             explore, and share augmented realities on real-world locations.
           </p>
 
-          <div className="flex justify-center">
+          <div className="flex justify-center mb-12">
             <Link
               href="/api/auth/signin"
               className="flex items-center gap-2 rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
@@ -48,10 +90,18 @@ const Index = async () => {
               Sign in with Discord
             </Link>
           </div>
-        </div>
 
-        <div className="w-full px-32 -mt-8 mb-12" style={{ height: '600px', position: 'relative' }}>
-          <GallerySwitcherClient />
+          <div className="mb-16">
+            {imagePaths.length > 0 ? (
+              <CarouselWrapper
+                images={imagePaths}
+                locations={imageLocations} // Pass locations to CarouselWrapper
+                responsive={responsive}
+              />
+            ) : (
+              <p className="text-center text-[#A0AEC0]">No images available</p>
+            )}
+          </div>
         </div>
 
         <div className="container mx-auto px-4 py-8">
